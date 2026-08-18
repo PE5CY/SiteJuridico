@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Jus Curioso — Curiosidades e Informações sobre Direito</title>
+<meta name="description" content="Portal de curiosidades jurídicas, informações por área do direito e glossário de termos jurídicos, em linguagem acessível." />
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container">
+    <a href="index.html" class="brand">
+      <span class="mark">J</span>
+      <span>Jus Curioso<small>Direito para todos</small></span>
+    </a>
+    <button class="nav-toggle" aria-label="Abrir menu">☰</button>
+    <nav class="main-nav">
+      <a href="index.html" class="active">Início</a>
+      <a href="curiosidades.html">Curiosidades</a>
+      <a href="direitos.html">Áreas do Direito</a>
+      <a href="glossario.html">Glossário</a>
+      <a href="sobre.html">Sobre</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="container">
+    <span class="eyebrow">Direito acessível a todos</span>
+    <h1>Curiosidades e informações relevantes sobre o mundo jurídico</h1>
+    <p class="lead">Um espaço para aprender sobre direitos, entender termos jurídicos e descobrir fatos curiosos sobre a história e o funcionamento do Direito — em linguagem simples, sem juridiquês.</p>
+    <div class="hero-actions">
+      <a href="curiosidades.html" class="btn btn-gold">Explorar curiosidades</a>
+      <a href="direitos.html" class="btn btn-outline">Conhecer as áreas do direito</a>
+    </div>
+
+    <div class="hero-stats">
+      <div class="stat"><b>25+</b><span>Curiosidades jurídicas</span></div>
+      <div class="stat"><b>6</b><span>Áreas do direito</span></div>
+      <div class="stat"><b>25</b><span>Termos no glossário</span></div>
+      <div class="stat"><b>100%</b><span>Linguagem acessível</span></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <span class="eyebrow">Por que este site existe</span>
+        <h2>Direito não precisa ser complicado</h2>
+        <p>Reunimos informações confiáveis, curiosidades históricas e explicações claras para aproximar qualquer pessoa do universo jurídico — estudante, curioso ou cidadão que quer conhecer melhor seus direitos.</p>
+      </div>
+    </div>
+
+    <div class="grid grid-3">
+      <div class="card">
+        <div class="icon">📜</div>
+        <h3>Curiosidades reais</h3>
+        <p>Fatos históricos, origens de expressões em latim e detalhes pouco conhecidos sobre leis brasileiras e mundiais.</p>
+      </div>
+      <div class="card">
+        <div class="icon">⚖️</div>
+        <h3>Áreas do direito</h3>
+        <p>Um panorama de direito civil, penal, trabalhista, consumidor, digital e constitucional, explicado de forma direta.</p>
+      </div>
+      <div class="card">
+        <div class="icon">🔎</div>
+        <h3>Glossário jurídico</h3>
+        <p>Termos técnicos traduzidos para o dia a dia, para você entender contratos, sentenças e notícias jurídicas.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="alt-bg">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <span class="eyebrow">Em destaque</span>
+        <h2>Curiosidades selecionadas</h2>
+      </div>
+      <a href="curiosidades.html" class="btn btn-outline" style="color:var(--navy-900); border-color:var(--navy-900);">Ver todas</a>
+    </div>
+
+    <div class="curio-grid" id="home-curio-preview">
+      <!-- preenchido via JS -->
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="quote-block">
+      <p class="quote">"A justiça atrasada não é justiça. É, na verdade, a própria negação da justiça."</p>
+      <span class="who">Rui Barbosa — Oração aos Moços</span>
+    </div>
+  </div>
+</section>
+
+<section class="alt-bg">
+  <div class="container">
+    <div class="cta-banner">
+      <div>
+        <h3>Quer entender melhor os seus direitos?</h3>
+        <p>Navegue pelas áreas do direito e descubra o que a lei garante para você no trabalho, no consumo e no dia a dia.</p>
+      </div>
+      <a href="direitos.html" class="btn btn-gold">Ver áreas do direito</a>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <h4>Jus Curioso</h4>
+        <p>Portal educativo sobre curiosidades e informações gerais do mundo jurídico. Conteúdo com fins informativos, não substitui orientação de um advogado.</p>
+      </div>
+      <div>
+        <h4>Navegação</h4>
+        <ul>
+          <li><a href="index.html">Início</a></li>
+          <li><a href="curiosidades.html">Curiosidades</a></li>
+          <li><a href="direitos.html">Áreas do Direito</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Recursos</h4>
+        <ul>
+          <li><a href="glossario.html">Glossário jurídico</a></li>
+          <li><a href="sobre.html">Sobre o projeto</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Aviso legal</h4>
+        <ul>
+          <li>Conteúdo educativo e informativo</li>
+          <li>Não constitui consultoria jurídica</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© <span id="year"></span> Jus Curioso. Todos os direitos reservados.</span>
+      <span>Feito com interesse por Direito e Educação.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="js/data.js"></script>
+<script src="js/script.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const preview = document.getElementById("home-curio-preview");
+    const destaques = CURIOSIDADES.slice(0, 6);
+    preview.innerHTML = destaques.map(c => `
+      <article class="curio-card">
+        <span class="tag">${c.categoria}</span>
+        <h3>${c.titulo}</h3>
+        <p>${c.texto}</p>
+      </article>
+    `).join("");
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Curiosidades Jurídicas — Jus Curioso</title>
+<meta name="description" content="Curiosidades sobre o mundo do direito: história, expressões em latim, leis brasileiras e fatos pouco conhecidos." />
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container">
+    <a href="index.html" class="brand">
+      <span class="mark">J</span>
+      <span>Jus Curioso<small>Direito para todos</small></span>
+    </a>
+    <button class="nav-toggle" aria-label="Abrir menu">☰</button>
+    <nav class="main-nav">
+      <a href="index.html">Início</a>
+      <a href="curiosidades.html" class="active">Curiosidades</a>
+      <a href="direitos.html">Áreas do Direito</a>
+      <a href="glossario.html">Glossário</a>
+      <a href="sobre.html">Sobre</a>
+    </nav>
+  </div>
+</header>
+
+<section class="page-hero">
+  <div class="container">
+    <span class="eyebrow">Mosaico jurídico</span>
+    <h1>Curiosidades sobre Direito</h1>
+    <p>Fatos históricos, origens de expressões em latim e detalhes pouco conhecidos das leis brasileiras e do direito ao redor do mundo. Use a busca ou os filtros para explorar por tema.</p>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="search-box">
+      <input type="text" id="curio-search" placeholder="Buscar por palavra-chave, tema ou lei..." />
+    </div>
+
+    <div class="filter-bar" id="filter-bar"></div>
+
+    <p id="curio-count" style="color:var(--ink-soft); font-size:0.9rem; margin-bottom:20px;"></p>
+
+    <div class="curio-grid" id="curio-grid"></div>
+
+    <div class="empty-state" id="empty-state">
+      <h3>Nenhuma curiosidade encontrada</h3>
+      <p>Tente outro termo de busca ou selecione outra categoria.</p>
+    </div>
+  </div>
+</section>
+
+<section class="alt-bg">
+  <div class="container">
+    <div class="disclaimer">
+      <span class="ico">ℹ️</span>
+      <div>
+        <strong>Aviso:</strong> as informações desta página têm caráter educativo e geral. Leis mudam com o tempo e podem ter interpretações distintas — para decisões pessoais, consulte sempre um advogado ou fonte oficial atualizada.
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <h4>Jus Curioso</h4>
+        <p>Portal educativo sobre curiosidades e informações gerais do mundo jurídico. Conteúdo com fins informativos, não substitui orientação de um advogado.</p>
+      </div>
+      <div>
+        <h4>Navegação</h4>
+        <ul>
+          <li><a href="index.html">Início</a></li>
+          <li><a href="curiosidades.html">Curiosidades</a></li>
+          <li><a href="direitos.html">Áreas do Direito</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Recursos</h4>
+        <ul>
+          <li><a href="glossario.html">Glossário jurídico</a></li>
+          <li><a href="sobre.html">Sobre o projeto</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Aviso legal</h4>
+        <ul>
+          <li>Conteúdo educativo e informativo</li>
+          <li>Não constitui consultoria jurídica</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© <span id="year"></span> Jus Curioso. Todos os direitos reservados.</span>
+      <span>Feito com interesse por Direito e Educação.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="js/data.js"></script>
+<script src="js/script.js"></script>
+<script src="js/curiosidades.js"></script>
+</body>
+</html>
