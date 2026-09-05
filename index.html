@@ -13,9 +13,8 @@
   <meta property="og:image" content="assets/img/banner-hero.png" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Legalmente Isabela — Papo de Direito" />
-  <meta name="twitter:description" content="Estudos e análises das diversas áreas do Direito por Isabela." />
   <link rel="stylesheet" href="css/style.css" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob:; script-src 'self' 'unsafe-inline';" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob:; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://cdn.jsdelivr.net;" />
   <meta http-equiv="X-Content-Type-Options" content="nosniff" />
   <meta name="referrer" content="strict-origin-when-cross-origin" />
 </head>
@@ -627,7 +626,56 @@
         </div>
       </div>
 
-      <!-- Seção 3: Backup & Restauração de Conteúdo -->
+      <!-- Seção 3: Banco de Dados na Nuvem (Supabase / PostgreSQL) -->
+      <div class="admin-panel-section">
+        <h3 class="admin-section-title">☁️ Banco de Dados na Nuvem (Supabase)</h3>
+        <p class="admin-sec-info">
+          Conecte o blog a um banco de dados gratuito na nuvem para que seus artigos e a senha fiquem centralizados e acessíveis a todos os leitores do mundo.
+        </p>
+
+        <div class="admin-db-status-bar" style="display: flex; align-items: center; justify-content: space-between; background: var(--bg-soft-blush); padding: 12px 16px; border-radius: var(--radius-sm); margin-bottom: 14px; border: 1px solid var(--border-light); flex-wrap: wrap; gap: 10px;">
+          <div>
+            <strong style="font-size: 0.88rem; color: var(--text-title);">Status:</strong>
+            <span id="db-status-badge" style="display: inline-block; font-size: 0.82rem; font-weight: 700; margin-left: 6px;">🟡 Verificando conexão...</span>
+          </div>
+          <button type="button" id="btn-sync-cloud" class="btn btn-outline" style="font-size: 0.78rem; padding: 6px 14px; height: auto;">
+            🔄 Sincronizar Artigos com a Nuvem
+          </button>
+        </div>
+
+        <form id="form-database-config">
+          <div class="form-group">
+            <label for="input-supabase-url">Project URL (Supabase)</label>
+            <input 
+              type="url" 
+              id="input-supabase-url" 
+              class="form-input" 
+              placeholder="https://seu-projeto.supabase.co" 
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="input-supabase-key">Project Anon Key (Chave Pública do Supabase)</label>
+            <input 
+              type="password" 
+              id="input-supabase-key" 
+              class="form-input" 
+              placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." 
+            />
+          </div>
+
+          <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 10px; flex-wrap: wrap;">
+            <button type="button" id="btn-disconnect-db" class="btn btn-outline" style="color: #c9444d; border-color: #f2c7c7; font-size: 0.82rem; padding: 8px 16px;">
+              Desconectar Nuvem (Usar Local)
+            </button>
+            <button type="submit" id="btn-save-db" class="btn btn-primary" style="font-size: 0.82rem; padding: 8px 18px;">
+              💾 Conectar & Salvar Chaves
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Seção 4: Backup & Restauração de Conteúdo -->
       <div class="admin-panel-section" style="border-bottom: none; margin-bottom: 0; padding-bottom: 0;">
         <h3 class="admin-section-title">💾 Backup & Restauração de Dados</h3>
         <p class="admin-sec-info">
@@ -711,6 +759,9 @@
   </footer>
 
   <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/db-config.js"></script>
+  <script src="js/db.js"></script>
   <script src="js/script.js"></script>
   <script src="js/blog.js"></script>
 </body>

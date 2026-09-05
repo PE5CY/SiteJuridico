@@ -256,12 +256,26 @@ class BlogManager {
   }
 
   async init() {
-    this.ensureDefaultArticles();
-    this.ensureAdminCredentials();
     this.setupEventListeners();
+    this.setupDatabaseEventListeners();
     this.updateAdminUI();
-    this.renderArticles();
     this.loadSavedPhoto();
+
+    // Sincroniza credenciais da nuvem (ou fallback local)
+    await this.ensureAdminCredentials();
+
+    // Carrega artigos da nuvem (ou cache local resiliente)
+    await this.loadArticlesFromDb();
+  }
+
+  async loadArticlesFromDb() {
+    if (window.dbService) {
+      await window.dbService.fetchArticles(DEFAULT_ARTICLES);
+    } else {
+      this.ensureDefaultArticles();
+    }
+    this.renderArticles();
+    this.updateDbStatusBadge();
   }
 
   ensureDefaultArticles() {
@@ -289,14 +303,24 @@ class BlogManager {
     }
   }
 
-  ensureAdminCredentials() {
-    if (!localStorage.getItem(this.saltKey) || !localStorage.getItem(this.hashKey)) {
-      localStorage.setItem(this.saltKey, DEFAULT_SALT);
-      localStorage.setItem(this.hashKey, DEFAULT_HASH);
+  async ensureAdminCredentials() {
+    if (window.dbService) {
+      await window.dbService.fetchAdminCredentials(DEFAULT_SALT, DEFAULT_HASH);
+    } else {
+      if (!localStorage.getItem(this.saltKey) || !localStorage.getItem(this.hashKey)) {
+        localStorage.setItem(this.saltKey, DEFAULT_SALT);
+        localStorage.setItem(this.hashKey, DEFAULT_HASH);
+      }
     }
   }
 
   getArticles() {
+    if (window.dbService) {
+      const local = window.dbService.getLocalArticles();
+      if (Array.isArray(local) && local.length > 0) {
+        return local.filter(this.validateArticleSchema);
+      }
+    }
     try {
       const data = localStorage.getItem(this.storageKey);
       if (!data) return DEFAULT_ARTICLES;
@@ -304,7 +328,7 @@ class BlogManager {
       if (!Array.isArray(parsed)) return DEFAULT_ARTICLES;
       return parsed.filter(this.validateArticleSchema);
     } catch (e) {
-      console.error("Erro seguro ao carregar artigos do localStorage:", e);
+      console.error("Erro seguro ao carregar artigos:", e);
       return DEFAULT_ARTICLES;
     }
   }
@@ -525,8 +549,9 @@ class BlogManager {
     }
 
     try {
-      const storedSalt = localStorage.getItem(this.saltKey) || DEFAULT_SALT;
-      const storedHash = localStorage.getItem(this.hashKey) || DEFAULT_HASH;
+      const { salt: storedSalt, hash: storedHash } = window.dbService
+        ? await window.dbService.fetchAdminCredentials(DEFAULT_SALT, DEFAULT_HASH)
+        : { salt: localStorage.getItem(this.saltKey) || DEFAULT_SALT, hash: localStorage.getItem(this.hashKey) || DEFAULT_HASH };
 
       // Derivação de chave segura via PBKDF2-SHA256 (100.000 iterações)
       const computedHash = await CryptoSecurity.hashPassword(enteredPass, storedSalt);
@@ -604,11 +629,15 @@ class BlogManager {
       const freshSalt = CryptoSecurity.generateSalt();
       const freshHash = await CryptoSecurity.hashPassword(newPass, freshSalt);
 
-      localStorage.setItem(this.saltKey, freshSalt);
-      localStorage.setItem(this.hashKey, freshHash);
+      if (window.dbService) {
+        await window.dbService.saveAdminCredentials(freshHash, freshSalt);
+      } else {
+        localStorage.setItem(this.saltKey, freshSalt);
+        localStorage.setItem(this.hashKey, freshHash);
+      }
 
       form.reset();
-      this.showToast("Senha de administradora alterada e criptografada com sucesso! 🔒");
+      this.showToast("Senha de administradora alterada e sincronizada com segurança! 🔒");
     } catch (e) {
       console.error("Erro ao alterar senha:", e);
       alert("Erro ao aplicar criptografia à nova senha.");
@@ -680,7 +709,112 @@ class BlogManager {
     if (countTrab) countTrab.textContent = articles.filter(a => a.categoria === "Direito do Trabalho").length;
     if (countAmbiental) countAmbiental.textContent = articles.filter(a => a.categoria === "Direito Ambiental").length;
 
+    // Atualiza campos e status da conexão com Supabase
+    if (window.dbService) {
+      const creds = window.dbService.getCredentials();
+      const inputUrl = document.getElementById("input-supabase-url");
+      const inputKey = document.getElementById("input-supabase-key");
+      if (inputUrl) inputUrl.value = creds.url || "";
+      if (inputKey) inputKey.value = creds.anonKey || "";
+      this.updateDbStatusBadge();
+    }
+
     this.openModal(modal);
+  }
+
+  updateDbStatusBadge() {
+    const badge = document.getElementById("db-status-badge");
+    if (!badge) return;
+
+    if (window.dbService && window.dbService.isConfigured()) {
+      badge.innerHTML = '<span style="color: #2e7d32;">🟢 Conectado na Nuvem (PostgreSQL / Supabase)</span>';
+    } else {
+      badge.innerHTML = '<span style="color: #b78103;">🟡 Modo Local / Cache (Offline)</span>';
+    }
+  }
+
+  setupDatabaseEventListeners() {
+    const formDb = document.getElementById("form-database-config");
+    const btnSyncCloud = document.getElementById("btn-sync-cloud");
+    const btnDisconnectDb = document.getElementById("btn-disconnect-db");
+
+    if (formDb) {
+      formDb.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const urlInput = document.getElementById("input-supabase-url");
+        const keyInput = document.getElementById("input-supabase-key");
+        const submitBtn = document.getElementById("btn-save-db");
+
+        const url = (urlInput ? urlInput.value : "").trim();
+        const key = (keyInput ? keyInput.value : "").trim();
+
+        if (!url || !key) {
+          alert("Por favor, preencha a URL e a Anon Key do Supabase.");
+          return;
+        }
+
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.textContent = "Testando conexão...";
+        }
+
+        const testResult = await window.dbService.testConnection(url, key);
+
+        if (testResult.ok) {
+          window.dbService.saveCloudCredentials(url, key);
+          this.updateDbStatusBadge();
+
+          // Sincroniza artigos locais com a nuvem automaticamente
+          await window.dbService.syncLocalToCloud(this.getArticles());
+          await this.loadArticlesFromDb();
+
+          this.showToast("Conexão com o Supabase estabelecida com sucesso! ☁️✨");
+          alert("Sucesso! O banco de dados PostgreSQL na nuvem está ativo e sincronizado com o blog.");
+        } else {
+          alert(`Falha ao conectar com o Supabase:\n${testResult.error}\n\nDica: Verifique se executou o script schema.sql no SQL Editor do Supabase.`);
+        }
+
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = "💾 Conectar & Salvar Chaves";
+        }
+      });
+    }
+
+    if (btnDisconnectDb) {
+      btnDisconnectDb.addEventListener("click", () => {
+        if (confirm("Deseja desconectar o banco de dados na nuvem e voltar ao modo local (cache)?")) {
+          window.dbService.saveCloudCredentials("", "");
+          const urlInput = document.getElementById("input-supabase-url");
+          const keyInput = document.getElementById("input-supabase-key");
+          if (urlInput) urlInput.value = "";
+          if (keyInput) keyInput.value = "";
+          this.updateDbStatusBadge();
+          this.showToast("Modo local reativado.");
+        }
+      });
+    }
+
+    if (btnSyncCloud) {
+      btnSyncCloud.addEventListener("click", async () => {
+        if (!window.dbService || !window.dbService.isConfigured()) {
+          alert("Configure e salve a conexão com o Supabase primeiro.");
+          return;
+        }
+        btnSyncCloud.disabled = true;
+        btnSyncCloud.textContent = "Sincronizando...";
+
+        const result = await window.dbService.syncLocalToCloud(this.getArticles());
+        if (result.ok) {
+          this.showToast(`Sincronização concluída! ${result.count} artigos salvos na nuvem.`);
+        } else {
+          alert(`Erro na sincronização: ${result.error}`);
+        }
+
+        btnSyncCloud.disabled = false;
+        btnSyncCloud.textContent = "🔄 Sincronizar Artigos com a Nuvem";
+      });
+    }
   }
 
   /* ===== Backup & Restauração de Conteúdo ===== */
@@ -852,7 +986,12 @@ class BlogManager {
         articles[index].resumo = resumo;
         articles[index].conteudo = conteudo;
         articles[index].tempoLeitura = tempoLeitura.includes("min") ? tempoLeitura : `${tempoLeitura} min`;
-        this.saveArticles(articles);
+
+        if (window.dbService) {
+          await window.dbService.saveArticle(articles[index]);
+        } else {
+          this.saveArticles(articles);
+        }
 
         form.reset();
         this.closeModal(modal);
@@ -886,8 +1025,12 @@ class BlogManager {
       conteudo
     };
 
-    articles.unshift(newArticle);
-    this.saveArticles(articles);
+    if (window.dbService) {
+      await window.dbService.saveArticle(newArticle);
+    } else {
+      articles.unshift(newArticle);
+      this.saveArticles(articles);
+    }
 
     form.reset();
     this.closeModal(modal);
@@ -901,7 +1044,7 @@ class BlogManager {
     }
   }
 
-  deleteArticle(id) {
+  async deleteArticle(id) {
     if (!this.checkSession()) return;
 
     const articles = this.getArticles();
@@ -912,8 +1055,12 @@ class BlogManager {
       return;
     }
 
-    const updated = articles.filter(a => a.id !== id);
-    this.saveArticles(updated);
+    if (window.dbService) {
+      await window.dbService.deleteArticle(id);
+    } else {
+      const updated = articles.filter(a => a.id !== id);
+      this.saveArticles(updated);
+    }
 
     const modal = document.getElementById("modal-reader");
     if (modal) this.closeModal(modal);

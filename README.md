@@ -47,6 +47,8 @@ sitejuridico/
 │
 ├── js/
 │   ├── blog.js           # Gerenciador de publicações, segurança PBKDF2 e admin
+│   ├── db.js             # Camada de acesso a dados (Supabase PostgreSQL + Cache local)
+│   ├── db-config.js      # Configurações de conexão com o banco na nuvem
 │   ├── script.js         # Menu mobile responsivo e acordeões
 │   └── data.js           # Dados estáticos de curiosidades e termos
 │
@@ -54,12 +56,38 @@ sitejuridico/
 │   ├── favicon.svg       # Favicon vetorial com o monograma editorial 'I'
 │   └── img/              # Imagens dos cards, categorias e ilustrações
 │
+├── schema.sql            # Script SQL completo de 1 clique para o Supabase
 ├── robots.txt            # Diretrizes para robôs de busca (SEO)
 ├── sitemap.xml           # Mapa do site para indexação no Google
 ├── vercel.json           # Configuração de headers de segurança para Vercel
 ├── _headers              # Headers de segurança e cache para Cloudflare/Netlify
 └── _redirects            # Roteamento limpo e fallback 404 para Netlify
 ```
+
+---
+
+## ☁️ Banco de Dados na Nuvem (Supabase / PostgreSQL)
+
+O blog possui suporte nativo a banco de dados relacional **PostgreSQL via Supabase** com sincronização em tempo real. Com isso, os artigos que você publicar e as alterações de senha ficam salvos na nuvem e visíveis para qualquer leitor no mundo, em qualquer dispositivo.
+
+### Como Ativar seu Banco de Dados Gratuito em 3 Passos:
+
+1. **Crie o Projeto**:
+   - Acesse [supabase.com](https://supabase.com) e crie uma conta gratuita.
+   - Clique em **New Project** (escolha um nome, ex: `legalmente-isabela`, e defina uma senha de banco).
+2. **Crie as Tabelas**:
+   - No menu lateral esquerdo do Supabase, clique em **SQL Editor**.
+   - Abra o arquivo [schema.sql](file:///c:/PROJETOS/sitejuridico/schema.sql) deste projeto, copie todo o seu conteúdo e cole no SQL Editor do Supabase.
+   - Clique em **Run**. Todas as tabelas (`artigos`, `autora_config`), políticas de segurança (RLS) e dados padrão serão criados instantaneamente.
+3. **Conecte ao Blog**:
+   - No Supabase, vá em **Project Settings (ícone de engrenagem) > API**.
+   - Copie a **Project URL** e a **anon public key**.
+   - No blog, acerte a **Área da Autora** > **⚙️ Painel** > seção **Banco de Dados na Nuvem**.
+   - Cole a URL e a Anon Key e clique em **💾 Conectar & Salvar Chaves**.
+   - Pronto! O blog sincronizará todos os artigos e operará conectado à nuvem!
+
+> [!NOTE]
+> **Modo Híbrido & Resiliência:** Mesmo antes de conectar o banco ou se a sua conexão de internet oscilar, o blog continua funcionando perfeitamente através de cache local resiliente.
 
 ---
 
