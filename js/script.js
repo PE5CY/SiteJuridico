@@ -5,6 +5,15 @@ document.addEventListener("DOMContentLoaded", () => {
   const nav = document.querySelector(".main-nav");
   if (toggle && nav) {
     toggle.addEventListener("click", () => nav.classList.toggle("open"));
+
+    // Fecha o menu móvel ao clicar em qualquer link de navegação ou botão interno
+    nav.querySelectorAll("a, button").forEach((item) => {
+      item.addEventListener("click", () => {
+        if (window.innerWidth <= 940) {
+          nav.classList.remove("open");
+        }
+      });
+    });
   }
 
   const yearEl = document.getElementById("year");

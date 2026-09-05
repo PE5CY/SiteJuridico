@@ -1,168 +1,717 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Jus Curioso — Curiosidades e Informações sobre Direito</title>
-<meta name="description" content="Portal de curiosidades jurídicas, informações por área do direito e glossário de termos jurídicos, em linguagem acessível." />
-<link rel="stylesheet" href="css/style.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Legalmente Isabela — Papo de Direito | Blog Jurídico</title>
+  <meta name="description" content="Blog jurídico com estudos, reflexões, curiosidades e análises de Direito Penal, Civil, Constitucional, Trabalhista e Ambiental por Isabela." />
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+  <link rel="alternate icon" href="favicon.svg" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Legalmente Isabela — Papo de Direito | Blog Jurídico" />
+  <meta property="og:description" content="Blog jurídico voltado ao estudo, pesquisa acadêmica e reflexões de Direito Penal, Civil, Constitucional, do Trabalho e Ambiental." />
+  <meta property="og:image" content="assets/img/banner-hero.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Legalmente Isabela — Papo de Direito" />
+  <meta name="twitter:description" content="Estudos e análises das diversas áreas do Direito por Isabela." />
+  <link rel="stylesheet" href="css/style.css" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob:; script-src 'self' 'unsafe-inline';" />
+  <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
 </head>
 <body>
 
-<header class="site-header">
-  <div class="container">
-    <a href="index.html" class="brand">
-      <span class="mark">J</span>
-      <span>Jus Curioso<small>Direito para todos</small></span>
-    </a>
-    <button class="nav-toggle" aria-label="Abrir menu">☰</button>
-    <nav class="main-nav">
-      <a href="index.html" class="active">Início</a>
-      <a href="curiosidades.html">Curiosidades</a>
-      <a href="direitos.html">Áreas do Direito</a>
-      <a href="glossario.html">Glossário</a>
-      <a href="sobre.html">Sobre</a>
-    </nav>
+  <!-- Header & Menu de Navegação -->
+  <header class="site-header">
+    <div class="container header-container">
+      <!-- Menu de Navegação Principal -->
+      <nav class="main-nav" id="main-nav">
+        <a href="index.html" class="active">Início</a>
+        <a href="#sobre-autora">Sobre a Autora</a>
+        <a href="#categorias">Categorias</a>
+        <a href="#artigos-section">Artigos</a>
+        <a href="curiosidades.html">Curiosidades</a>
+        <a href="glossario.html">Glossário</a>
+      </nav>
+
+      <div class="header-actions">
+        <!-- Controles exclusivos da Administradora (Isabela) -->
+        <div id="admin-logged-controls" class="admin-logged-controls" style="display: none;">
+          <button id="btn-open-publish" class="btn-nav-admin btn-nav-publish" title="Criar nova publicação">
+            <span class="btn-nav-icon">+</span>
+            <span class="btn-nav-label">Nova Publicação</span>
+          </button>
+          <button id="btn-open-admin-panel" class="btn-nav-admin btn-nav-panel" title="Painel de Controle e Segurança da Autora">
+            <span class="btn-nav-icon">⚙️</span>
+            <span class="btn-nav-label">Painel</span>
+          </button>
+          <div class="admin-badge-pill">
+            <span class="admin-crown">👑</span>
+            <span class="author-name">Isabela</span>
+            <button id="btn-logout" class="btn-logout-small" title="Sair do modo administrador">Sair</button>
+          </div>
+        </div>
+
+        <!-- Botão de Acesso para Visitantes / Login -->
+        <button id="btn-open-login" class="btn btn-outline btn-admin-login-trigger">
+          <span>🔐</span> Área da Autora
+        </button>
+
+        <!-- Botão Toggle de Navegação Responsiva (Mobile / Tablet) -->
+        <button class="nav-toggle" aria-label="Abrir menu de navegação">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Banner Hero em HTML & CSS Puro (Referência Imagem 1) -->
+  <section class="hero-banner-section">
+    <div class="container">
+      <div class="hero-canvas">
+        
+        <!-- Sombra Botânica Suave (Foliage Shadow) no fundo superior esquerdo -->
+        <div class="hero-shadow-foliage" aria-hidden="true"></div>
+
+        <!-- Conteúdo Principal do Banner -->
+        <div class="hero-canvas-inner">
+          
+          <!-- Bloco Tipográfico Editorial (Esquerda) -->
+          <div class="hero-typography-block">
+            <span class="hero-brand-top">L E G A L M E N T E</span>
+            <h1 class="hero-brand-name">ISABELA</h1>
+            
+            <div class="hero-brand-divider">
+              <span class="divider-line"></span>
+              <span class="divider-diamond">◇</span>
+              <span class="divider-line"></span>
+            </div>
+
+            <p class="hero-brand-tagline">PAPO DE DIREITO • BLOG JURÍDICO</p>
+          </div>
+
+          <!-- Bloco Cenográfico (Centro e Direita): Balança Rosê Gold + Livros + Flores Secas -->
+          <div class="hero-visual-block">
+            
+            <!-- Balança da Justiça em Ouro Rosê (SVG Vetorial de Alta Resolução) -->
+            <div class="hero-scale-wrapper">
+              <svg class="hero-scale-svg" viewBox="0 0 240 280" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Balança da Justiça">
+                <defs>
+                  <linearGradient id="roseGoldMetal" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#f8e5e0" />
+                    <stop offset="25%" stop-color="#dd9f91" />
+                    <stop offset="50%" stop-color="#c47d70" />
+                    <stop offset="75%" stop-color="#e8bfb5" />
+                    <stop offset="100%" stop-color="#a86055" />
+                  </linearGradient>
+                  <linearGradient id="roseGoldHighlight" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="#ffffff" stop-opacity="0.9" />
+                    <stop offset="100%" stop-color="#dfa497" stop-opacity="0.2" />
+                  </linearGradient>
+                  <linearGradient id="panGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="#eac2b8" />
+                    <stop offset="50%" stop-color="#c98578" />
+                    <stop offset="100%" stop-color="#9c564c" />
+                  </linearGradient>
+                  <filter id="shadowGlow" x="-10%" y="-10%" width="120%" height="120%">
+                    <feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#a86055" flood-opacity="0.22" />
+                  </filter>
+                </defs>
+
+                <!-- Base da balança -->
+                <ellipse cx="120" cy="262" rx="46" ry="12" fill="url(#roseGoldMetal)" filter="url(#shadowGlow)" />
+                <ellipse cx="120" cy="258" rx="42" ry="9" fill="url(#roseGoldHighlight)" />
+                <path d="M100 258 C100 245, 140 245, 140 258 Z" fill="url(#roseGoldMetal)" />
+                <rect x="115" y="235" width="10" height="15" rx="3" fill="url(#roseGoldMetal)" />
+                <ellipse cx="120" cy="235" rx="14" ry="4" fill="url(#roseGoldMetal)" />
+
+                <!-- Coluna central -->
+                <rect x="117.5" y="42" width="5" height="193" fill="url(#roseGoldMetal)" />
+                <ellipse cx="120" cy="140" rx="9" ry="3" fill="url(#roseGoldMetal)" />
+                <ellipse cx="120" cy="180" rx="11" ry="4" fill="url(#roseGoldMetal)" />
+
+                <!-- Topo ornamentado e ponteiro -->
+                <path d="M120 18 C116 28, 124 28, 120 42" stroke="url(#roseGoldMetal)" stroke-width="4" stroke-linecap="round" />
+                <ellipse cx="120" cy="30" rx="6" ry="6" fill="url(#roseGoldMetal)" />
+                <polygon points="120,8 116,22 124,22" fill="url(#roseGoldMetal)" />
+
+                <!-- Haste horizontal curvada e ornamentada -->
+                <path d="M30 75 C60 52, 100 56, 120 62 C140 56, 180 52, 210 75" stroke="url(#roseGoldMetal)" stroke-width="4.5" stroke-linecap="round" fill="none" />
+                <path d="M30 75 C70 68, 100 72, 120 66 C140 72, 170 68, 210 75" stroke="url(#roseGoldMetal)" stroke-width="2.5" stroke-linecap="round" fill="none" opacity="0.85" />
+                
+                <!-- Enfeites de voluta central -->
+                <path d="M108 55 C114 48, 126 48, 132 55" stroke="url(#roseGoldMetal)" stroke-width="2.5" fill="none" />
+                <circle cx="120" cy="62" r="5" fill="url(#roseGoldMetal)" />
+
+                <!-- Gancho e correntes esquerdas -->
+                <circle cx="30" cy="76" r="3.5" fill="url(#roseGoldMetal)" />
+                <line x1="30" y1="78" x2="14" y2="185" stroke="url(#roseGoldMetal)" stroke-width="1.3" stroke-dasharray="3,2" />
+                <line x1="30" y1="78" x2="30" y2="185" stroke="url(#roseGoldMetal)" stroke-width="1.3" stroke-dasharray="3,2" />
+                <line x1="30" y1="78" x2="46" y2="185" stroke="url(#roseGoldMetal)" stroke-width="1.3" stroke-dasharray="3,2" />
+
+                <!-- Prato esquerdo -->
+                <path d="M10 185 Q30 206 50 185 Z" fill="url(#panGrad)" filter="url(#shadowGlow)" />
+                <ellipse cx="30" cy="185" rx="20" ry="4.5" fill="url(#roseGoldHighlight)" />
+
+                <!-- Gancho e correntes direitas -->
+                <circle cx="210" cy="76" r="3.5" fill="url(#roseGoldMetal)" />
+                <line x1="210" y1="78" x2="194" y2="185" stroke="url(#roseGoldMetal)" stroke-width="1.3" stroke-dasharray="3,2" />
+                <line x1="210" y1="78" x2="210" y2="185" stroke="url(#roseGoldMetal)" stroke-width="1.3" stroke-dasharray="3,2" />
+                <line x1="210" y1="78" x2="226" y2="185" stroke="url(#roseGoldMetal)" stroke-width="1.3" stroke-dasharray="3,2" />
+
+                <!-- Prato direito -->
+                <path d="M190 185 Q210 206 230 185 Z" fill="url(#panGrad)" filter="url(#shadowGlow)" />
+                <ellipse cx="210" cy="185" rx="20" ry="4.5" fill="url(#roseGoldHighlight)" />
+              </svg>
+            </div>
+
+            <!-- Estante / Pilha de Livros Jurídicos e Vaso Floral -->
+            <div class="hero-books-arrangement">
+              
+              <!-- Flores Secas / Gypsophila atrás dos livros -->
+              <svg class="hero-florals-svg" viewBox="0 0 140 240" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M90 230 Q70 140 50 70 Q40 30 20 10" stroke="#cf9c95" stroke-width="1.6" stroke-linecap="round" />
+                <path d="M50 70 Q75 45 105 30" stroke="#cf9c95" stroke-width="1.2" stroke-linecap="round" />
+                <path d="M60 110 Q95 90 120 70" stroke="#cf9c95" stroke-width="1.2" stroke-linecap="round" />
+                <path d="M35 50 Q15 35 10 15" stroke="#cf9c95" stroke-width="1.2" stroke-linecap="round" />
+                <path d="M70 140 Q105 130 130 115" stroke="#cf9c95" stroke-width="1.2" stroke-linecap="round" />
+                
+                <!-- Flores delicadas -->
+                <circle cx="20" cy="10" r="3.5" fill="#f5ded8" stroke="#cf9c95" stroke-width="0.8" />
+                <circle cx="105" cy="30" r="3.5" fill="#f5ded8" stroke="#cf9c95" stroke-width="0.8" />
+                <circle cx="120" cy="70" r="3" fill="#fceee9" stroke="#cf9c95" stroke-width="0.8" />
+                <circle cx="10" cy="15" r="3" fill="#fceee9" stroke="#cf9c95" stroke-width="0.8" />
+                <circle cx="130" cy="115" r="3" fill="#f5ded8" stroke="#cf9c95" stroke-width="0.8" />
+                <circle cx="65" cy="38" r="2.5" fill="#fceee9" />
+                <circle cx="85" cy="80" r="2.5" fill="#f5ded8" />
+                <circle cx="40" cy="28" r="2.5" fill="#fceee9" />
+                <circle cx="115" cy="48" r="2.8" fill="#fceee9" />
+              </svg>
+
+              <!-- Livros em pé em tons rosê e ouro (Exatamente como a referência) -->
+              <div class="hero-books-shelf">
+                <!-- Livro 1 -->
+                <div class="spine-book spine-penal" title="Direito Penal">
+                  <div class="spine-ribs top"></div>
+                  <div class="spine-title-vertical">DIREITO PENAL</div>
+                  <div class="spine-icon">⚖️</div>
+                  <div class="spine-ribs bottom"></div>
+                </div>
+
+                <!-- Livro 2 -->
+                <div class="spine-book spine-civil" title="Direito Civil">
+                  <div class="spine-ribs top"></div>
+                  <div class="spine-title-vertical">DIREITO CIVIL</div>
+                  <div class="spine-icon">🏛️</div>
+                  <div class="spine-ribs bottom"></div>
+                </div>
+
+                <!-- Livro 3 -->
+                <div class="spine-book spine-const" title="Direito Constitucional">
+                  <div class="spine-ribs top"></div>
+                  <div class="spine-title-vertical">CONSTITUCIONAL</div>
+                  <div class="spine-icon">📜</div>
+                  <div class="spine-ribs bottom"></div>
+                </div>
+
+                <!-- Livro 4 -->
+                <div class="spine-book spine-trab" title="Direito do Trabalho">
+                  <div class="spine-ribs top"></div>
+                  <div class="spine-title-vertical">TRABALHISTA</div>
+                  <div class="spine-icon">💼</div>
+                  <div class="spine-ribs bottom"></div>
+                </div>
+
+                <!-- Livro 5 -->
+                <div class="spine-book spine-ambiental" title="Direito Ambiental">
+                  <div class="spine-ribs top"></div>
+                  <div class="spine-title-vertical">AMBIENTAL</div>
+                  <div class="spine-icon">🌿</div>
+                  <div class="spine-ribs bottom"></div>
+                </div>
+
+                <!-- Vaso em cerâmica rosê claro -->
+                <div class="hero-vase"></div>
+              </div>
+
+            </div>
+
+          </div>
+
+          <!-- Detalhe decorativo no canto inferior esquerdo: Caderno & Caneta Rosê Gold -->
+          <div class="hero-stationery-corner" aria-hidden="true">
+            <div class="hero-notebook">
+              <div class="notebook-ribbon"></div>
+            </div>
+            <div class="hero-pen"></div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Seção de Boas-Vindas (Referência Imagem 2) -->
+  <section class="welcome-section">
+    <div class="container">
+      <div class="welcome-inner">
+        <h2 class="welcome-title">Bem-vindo ao papo de direito</h2>
+        <p class="welcome-lead">
+          Conteúdo jurídico voltado ao estudo, à pesquisa e ao desenvolvimento profissional.
+        </p>
+        <div class="welcome-action">
+          <a href="#sobre-autora">Sobre a autora →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- Seção Sobre a Autora com Espaço Vazio para Foto (Referência Imagem 3) -->
+  <section class="author-section" id="sobre-autora">
+    <div class="container">
+      <div class="author-grid">
+        
+        <!-- Coluna da Esquerda: Espaço Vazio e Estilizado para Foto da Autora -->
+        <div class="author-photo-container">
+          <div class="author-photo-frame" id="author-photo-slot">
+            <div class="photo-placeholder-box">
+              <div class="photo-icon">📷</div>
+              <span class="photo-label">Espaço para Foto da Autora</span>
+              <small class="photo-hint">Adicione sua foto aqui quando desejar</small>
+            </div>
+          </div>
+          
+          <div class="author-photo-actions" id="author-photo-admin-actions" style="display: none;">
+            <label class="btn-upload-photo" for="author-photo-upload">
+              Carregar Foto
+              <input type="file" id="author-photo-upload" accept="image/*" style="display: none;" />
+            </label>
+            <button id="btn-remove-photo" class="btn-remove-photo" style="display: none;">
+              Remover Foto
+            </button>
+          </div>
+        </div>
+
+        <!-- Coluna da Direita: Biografia e Apresentação de Isabela -->
+        <div class="author-content-area">
+          <span class="section-tag">Perfil & Trajetória</span>
+          <h2 class="author-title">Sobre a autora</h2>
+          <div class="author-bio">
+            <p>
+              Meu nome é Isabela e sou estudante de Direito, apaixonada pelo conhecimento jurídico e pela constante busca por aprendizado.
+            </p>
+            <p>
+              Criei o Papo de Direito com o objetivo de compartilhar estudos, reflexões e análises sobre temas relevantes do universo jurídico, tornando o Direito mais acessível e contribuindo para o desenvolvimento acadêmico e profissional de estudantes e interessados na área.
+            </p>
+          </div>
+          <div class="author-badges">
+            <span class="badge-item">⚖️ Estudante de Direito</span>
+            <span class="badge-item">📚 Pesquisa Acadêmica</span>
+            <span class="badge-item">✍️ Produção de Artigos</span>
+            <span class="badge-item">💡 Direito Acessível</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- Seção de Categorias Interativas (Referência Imagem 4) -->
+  <section class="categories-section" id="categorias">
+    <div class="container">
+      <div class="section-head-center">
+        <h2 class="categories-title">Categorias</h2>
+        <p class="categories-sub">Clique em uma categoria para navegar diretamente pelas publicações correspondentes:</p>
+      </div>
+
+      <div class="categories-grid">
+        
+        <!-- Direito Penal -->
+        <div class="category-card" data-filter-category="Direito Penal" title="Ver artigos de Direito Penal">
+          <div class="category-card-img-wrap">
+            <img src="assets/img/card-penal.png" alt="Direito Penal" class="category-card-img" />
+          </div>
+          <span class="category-card-name">Direito Penal</span>
+        </div>
+
+        <!-- Direito Civil -->
+        <div class="category-card" data-filter-category="Direito Civil" title="Ver artigos de Direito Civil">
+          <div class="category-card-img-wrap">
+            <img src="assets/img/card-civil.png" alt="Direito Civil" class="category-card-img" />
+          </div>
+          <span class="category-card-name">Direito Civil</span>
+        </div>
+
+        <!-- Direito Constitucional -->
+        <div class="category-card" data-filter-category="Direito Constitucional" title="Ver artigos de Direito Constitucional">
+          <div class="category-card-img-wrap">
+            <img src="assets/img/card-constitucional.png" alt="Direito Constitucional" class="category-card-img" />
+          </div>
+          <span class="category-card-name">Direito Constitucional</span>
+        </div>
+
+        <!-- Direito do Trabalho -->
+        <div class="category-card" data-filter-category="Direito do Trabalho" title="Ver artigos de Direito do Trabalho">
+          <div class="category-card-img-wrap">
+            <img src="assets/img/card-trabalho.png" alt="Direito do Trabalho" class="category-card-img" />
+          </div>
+          <span class="category-card-name">Direito do Trabalho</span>
+        </div>
+
+        <!-- Direito Ambiental -->
+        <div class="category-card" data-filter-category="Direito Ambiental" title="Ver artigos de Direito Ambiental">
+          <div class="category-card-img-wrap">
+            <img src="assets/img/card-ambiental.png" alt="Direito Ambiental" class="category-card-img" />
+          </div>
+          <span class="category-card-name">Direito Ambiental</span>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Seção de Artigos & Feed do Blog -->
+  <section class="articles-section" id="artigos-section">
+    <div class="container">
+      <div class="blog-controls-wrapper">
+        <div class="controls-top-row">
+          <div>
+            <h2 class="categories-title" style="text-align: left; margin-bottom: 4px;">Publicações do Blog</h2>
+            <span class="articles-count-badge" id="articles-count">Carregando publicações...</span>
+          </div>
+
+          <div class="search-box-wrap">
+            <span class="search-icon">🔍</span>
+            <input 
+              type="text" 
+              id="blog-search" 
+              class="search-input" 
+              placeholder="Pesquisar por título, assunto ou termo..." 
+              aria-label="Pesquisar artigos"
+            />
+          </div>
+        </div>
+
+        <!-- Abas de Filtro por Categoria -->
+        <div class="category-pills-row">
+          <button class="category-pill active" data-category="Todas">Todas as Áreas</button>
+          <button class="category-pill" data-category="Direito Penal">Direito Penal</button>
+          <button class="category-pill" data-category="Direito Civil">Direito Civil</button>
+          <button class="category-pill" data-category="Direito Constitucional">Direito Constitucional</button>
+          <button class="category-pill" data-category="Direito do Trabalho">Direito do Trabalho</button>
+          <button class="category-pill" data-category="Direito Ambiental">Direito Ambiental</button>
+        </div>
+      </div>
+
+      <!-- Grid de Artigos (Preenchido dinamicamente via JS com persistência) -->
+      <div class="articles-grid" id="articles-grid">
+        <!-- Itens inseridos por blog.js -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Modal: Publicação e Edição de Artigo -->
+  <div class="modal-backdrop" id="modal-publish">
+    <div class="modal-card">
+      <button class="modal-close-btn" id="btn-close-publish" aria-label="Fechar modal">✕</button>
+      <div class="modal-head">
+        <h2 id="publish-modal-title">Nova Publicação</h2>
+        <p id="publish-modal-desc">Preencha as informações do seu artigo para publicá-lo no blog.</p>
+      </div>
+
+      <form id="form-publish">
+        <input type="hidden" id="input-edit-id" name="editId" value="" />
+
+        <div class="form-group">
+          <label for="input-titulo">Título da Publicação *</label>
+          <input 
+            type="text" 
+            id="input-titulo" 
+            name="titulo" 
+            class="form-input" 
+            placeholder="Ex: Teoria do Fato Jurídico no Novo Código Civil" 
+            required 
+          />
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="select-categoria">Seção / Categoria *</label>
+            <select id="select-categoria" name="categoria" class="form-select" required>
+              <option value="Direito Penal">Direito Penal</option>
+              <option value="Direito Civil">Direito Civil</option>
+              <option value="Direito Constitucional">Direito Constitucional</option>
+              <option value="Direito do Trabalho">Direito do Trabalho</option>
+              <option value="Direito Ambiental">Direito Ambiental</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="input-tempo">Tempo Estimado de Leitura</label>
+            <input 
+              type="text" 
+              id="input-tempo" 
+              name="tempoLeitura" 
+              class="form-input" 
+              placeholder="Ex: 4 min" 
+              value="4 min"
+            />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="input-resumo">Breve Resumo (Visível no feed) *</label>
+          <input 
+            type="text" 
+            id="input-resumo" 
+            name="resumo" 
+            class="form-input" 
+            placeholder="Um resumo de 1 ou 2 frases sobre os pontos principais do artigo..." 
+            required 
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="input-conteudo">Conteúdo Completo do Artigo *</label>
+          <textarea 
+            id="input-conteudo" 
+            name="conteudo" 
+            class="form-textarea" 
+            placeholder="Escreva ou cole seu artigo aqui. Deixe uma linha em branco entre os parágrafos." 
+            rows="8" 
+            required
+          ></textarea>
+        </div>
+
+        <div class="form-footer">
+          <button type="button" class="btn btn-outline" onclick="window.blogManager.closeModal(document.getElementById('modal-publish'))">Cancelar</button>
+          <button type="submit" id="btn-publish-submit" class="btn btn-primary">Publicar no Blog</button>
+        </div>
+      </form>
+    </div>
   </div>
-</header>
 
-<section class="hero">
-  <div class="container">
-    <span class="eyebrow">Direito acessível a todos</span>
-    <h1>Curiosidades e informações relevantes sobre o mundo jurídico</h1>
-    <p class="lead">Um espaço para aprender sobre direitos, entender termos jurídicos e descobrir fatos curiosos sobre a história e o funcionamento do Direito — em linguagem simples, sem juridiquês.</p>
-    <div class="hero-actions">
-      <a href="curiosidades.html" class="btn btn-gold">Explorar curiosidades</a>
-      <a href="direitos.html" class="btn btn-outline">Conhecer as áreas do direito</a>
-    </div>
+  <!-- Modal: Acesso Restrito da Autora (Login de Administradora) -->
+  <div class="modal-backdrop" id="modal-login">
+    <div class="modal-card modal-card-sm">
+      <button class="modal-close-btn" id="btn-close-login" aria-label="Fechar login">✕</button>
+      <div class="modal-head">
+        <div class="modal-icon-badge">👑</div>
+        <h2>Área da Autora</h2>
+        <p>Acesso exclusivo para publicação, edição e exclusão de artigos.</p>
+      </div>
 
-    <div class="hero-stats">
-      <div class="stat"><b>25+</b><span>Curiosidades jurídicas</span></div>
-      <div class="stat"><b>6</b><span>Áreas do direito</span></div>
-      <div class="stat"><b>25</b><span>Termos no glossário</span></div>
-      <div class="stat"><b>100%</b><span>Linguagem acessível</span></div>
-    </div>
-  </div>
-</section>
+      <form id="form-login">
+        <div class="form-group" style="text-align: left;">
+          <label for="input-admin-pass">Senha de Administradora</label>
+          <div class="input-password-wrap">
+            <input 
+              type="password" 
+              id="input-admin-pass" 
+              class="form-input" 
+              placeholder="Digite sua senha..." 
+              required 
+            />
+            <button type="button" class="btn-toggle-pass" id="btn-toggle-pass" title="Mostrar/ocultar senha">👁️</button>
+          </div>
+        </div>
 
-<section>
-  <div class="container">
-    <div class="section-head">
-      <div>
-        <span class="eyebrow">Por que este site existe</span>
-        <h2>Direito não precisa ser complicado</h2>
-        <p>Reunimos informações confiáveis, curiosidades históricas e explicações claras para aproximar qualquer pessoa do universo jurídico — estudante, curioso ou cidadão que quer conhecer melhor seus direitos.</p>
-      </div>
-    </div>
-
-    <div class="grid grid-3">
-      <div class="card">
-        <div class="icon">📜</div>
-        <h3>Curiosidades reais</h3>
-        <p>Fatos históricos, origens de expressões em latim e detalhes pouco conhecidos sobre leis brasileiras e mundiais.</p>
-      </div>
-      <div class="card">
-        <div class="icon">⚖️</div>
-        <h3>Áreas do direito</h3>
-        <p>Um panorama de direito civil, penal, trabalhista, consumidor, digital e constitucional, explicado de forma direta.</p>
-      </div>
-      <div class="card">
-        <div class="icon">🔎</div>
-        <h3>Glossário jurídico</h3>
-        <p>Termos técnicos traduzidos para o dia a dia, para você entender contratos, sentenças e notícias jurídicas.</p>
-      </div>
+        <div class="form-footer" style="justify-content: space-between;">
+          <button type="button" class="btn btn-outline" onclick="window.blogManager.closeModal(document.getElementById('modal-login'))">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Entrar no Painel</button>
+        </div>
+      </form>
     </div>
   </div>
-</section>
 
-<section class="alt-bg">
-  <div class="container">
-    <div class="section-head">
-      <div>
-        <span class="eyebrow">Em destaque</span>
-        <h2>Curiosidades selecionadas</h2>
+  <!-- Modal: Painel da Autora & Gestão de Segurança -->
+  <div class="modal-backdrop" id="modal-admin-panel">
+    <div class="modal-card modal-card-admin">
+      <button class="modal-close-btn" id="btn-close-admin-panel" aria-label="Fechar painel">✕</button>
+      
+      <div class="modal-head">
+        <div class="modal-icon-badge">⚙️</div>
+        <h2>Painel da Autora & Segurança</h2>
+        <p>Gerencie suas credenciais criptografadas, métricas do blog e backups de conteúdo.</p>
       </div>
-      <a href="curiosidades.html" class="btn btn-outline" style="color:var(--navy-900); border-color:var(--navy-900);">Ver todas</a>
-    </div>
 
-    <div class="curio-grid" id="home-curio-preview">
-      <!-- preenchido via JS -->
+      <!-- Seção 1: Métricas do Blog -->
+      <div class="admin-panel-section">
+        <h3 class="admin-section-title">📊 Visão Geral do Blog</h3>
+        <div class="admin-stats-grid">
+          <div class="admin-stat-card">
+            <span class="admin-stat-number" id="admin-stat-total">0</span>
+            <span class="admin-stat-label">Total de Artigos</span>
+          </div>
+          <div class="admin-stat-card">
+            <span class="admin-stat-number" id="admin-stat-penal">0</span>
+            <span class="admin-stat-label">Direito Penal</span>
+          </div>
+          <div class="admin-stat-card">
+            <span class="admin-stat-number" id="admin-stat-civil">0</span>
+            <span class="admin-stat-label">Direito Civil</span>
+          </div>
+          <div class="admin-stat-card">
+            <span class="admin-stat-number" id="admin-stat-const">0</span>
+            <span class="admin-stat-label">Constitucional</span>
+          </div>
+          <div class="admin-stat-card">
+            <span class="admin-stat-number" id="admin-stat-trab">0</span>
+            <span class="admin-stat-label">Trabalho</span>
+          </div>
+          <div class="admin-stat-card">
+            <span class="admin-stat-number" id="admin-stat-ambiental">0</span>
+            <span class="admin-stat-label">Ambiental</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Seção 2: Criptografia & Troca de Senha -->
+      <div class="admin-panel-section">
+        <h3 class="admin-section-title">🔒 Segurança & Criptografia da Senha</h3>
+        <div class="admin-sec-box">
+          <div class="admin-sec-badge">
+            <span>🛡️ PBKDF2-HMAC-SHA256 Ativo</span>
+            <span class="sec-badge-detail">100.000 iterações • Salt de 16 bytes • Timing-Safe</span>
+          </div>
+          <p class="admin-sec-info">
+            Sua senha nunca é armazenada em texto simples. Ao alterar sua senha, uma nova chave criptográfica é derivada com algoritmo PBKDF2 e um novo salt aleatório.
+          </p>
+
+          <form id="form-change-password" class="form-change-pass">
+            <div class="form-group">
+              <label for="input-current-pass">Senha Atual</label>
+              <input 
+                type="password" 
+                id="input-current-pass" 
+                class="form-input" 
+                placeholder="Digite sua senha atual..." 
+                required 
+              />
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="input-new-pass">Nova Senha (mínimo 8 caracteres)</label>
+                <input 
+                  type="password" 
+                  id="input-new-pass" 
+                  class="form-input" 
+                  placeholder="Nova senha segura..." 
+                  minlength="8" 
+                  required 
+                />
+              </div>
+              <div class="form-group">
+                <label for="input-confirm-pass">Confirmar Nova Senha</label>
+                <input 
+                  type="password" 
+                  id="input-confirm-pass" 
+                  class="form-input" 
+                  placeholder="Repita a nova senha..." 
+                  minlength="8" 
+                  required 
+                />
+              </div>
+            </div>
+
+            <div style="text-align: right; margin-top: 8px;">
+              <button type="submit" class="btn btn-primary" style="padding: 10px 22px; font-size: 0.88rem;">
+                🔒 Salvar Nova Senha Criptografada
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Seção 3: Backup & Restauração de Conteúdo -->
+      <div class="admin-panel-section" style="border-bottom: none; margin-bottom: 0; padding-bottom: 0;">
+        <h3 class="admin-section-title">💾 Backup & Restauração de Dados</h3>
+        <p class="admin-sec-info">
+          Exporte uma cópia completa em JSON para garantir a integridade dos seus textos, ou restaure um backup anterior a qualquer momento.
+        </p>
+        
+        <div class="admin-backup-actions">
+          <button type="button" id="btn-export-backup" class="btn btn-outline" style="gap: 6px;">
+            <span>📥</span> Exportar Backup (.json)
+          </button>
+
+          <label for="input-import-backup" class="btn btn-outline" style="margin: 0; cursor: pointer; gap: 6px;">
+            <span>📤</span> Restaurar Backup (.json)
+          </label>
+          <input type="file" id="input-import-backup" accept=".json" style="display: none;" />
+        </div>
+      </div>
+
+      <div class="form-footer" style="margin-top: 24px;">
+        <button type="button" class="btn btn-outline" onclick="window.blogManager.closeModal(document.getElementById('modal-admin-panel'))">Fechar Painel</button>
+      </div>
     </div>
   </div>
-</section>
 
-<section>
-  <div class="container">
-    <div class="quote-block">
-      <p class="quote">"A justiça atrasada não é justiça. É, na verdade, a própria negação da justiça."</p>
-      <span class="who">Rui Barbosa — Oração aos Moços</span>
+  <!-- Modal: Leitor Completo de Artigo -->
+  <div class="modal-backdrop" id="modal-reader">
+    <div class="modal-card">
+      <button class="modal-close-btn" id="btn-close-reader" aria-label="Fechar leitor">✕</button>
+      <div id="reader-content">
+        <!-- Preenchido dinamicamente ao clicar em "Ler artigo" -->
+      </div>
     </div>
   </div>
-</section>
 
-<section class="alt-bg">
-  <div class="container">
-    <div class="cta-banner">
-      <div>
-        <h3>Quer entender melhor os seus direitos?</h3>
-        <p>Navegue pelas áreas do direito e descubra o que a lei garante para você no trabalho, no consumo e no dia a dia.</p>
-      </div>
-      <a href="direitos.html" class="btn btn-gold">Ver áreas do direito</a>
-    </div>
-  </div>
-</section>
+  <!-- Rodapé do Blog -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <h4>Legalmente Isabela</h4>
+          <p>Papo de Direito — Espaço acadêmico e educativo com reflexões, pesquisas e análises do universo jurídico, promovendo um Direito acessível e dinâmico.</p>
+        </div>
 
-<footer class="site-footer">
-  <div class="container">
-    <div class="footer-grid">
-      <div>
-        <h4>Jus Curioso</h4>
-        <p>Portal educativo sobre curiosidades e informações gerais do mundo jurídico. Conteúdo com fins informativos, não substitui orientação de um advogado.</p>
-      </div>
-      <div>
-        <h4>Navegação</h4>
-        <ul>
-          <li><a href="index.html">Início</a></li>
-          <li><a href="curiosidades.html">Curiosidades</a></li>
-          <li><a href="direitos.html">Áreas do Direito</a></li>
-        </ul>
-      </div>
-      <div>
-        <h4>Recursos</h4>
-        <ul>
-          <li><a href="glossario.html">Glossário jurídico</a></li>
-          <li><a href="sobre.html">Sobre o projeto</a></li>
-        </ul>
-      </div>
-      <div>
-        <h4>Aviso legal</h4>
-        <ul>
-          <li>Conteúdo educativo e informativo</li>
-          <li>Não constitui consultoria jurídica</li>
-        </ul>
-      </div>
-    </div>
-    <div class="footer-bottom">
-      <span>© <span id="year"></span> Jus Curioso. Todos os direitos reservados.</span>
-      <span>Feito com interesse por Direito e Educação.</span>
-    </div>
-  </div>
-</footer>
+        <div>
+          <h4>Navegação</h4>
+          <ul>
+            <li><a href="index.html">Início</a></li>
+            <li><a href="#sobre-autora">Sobre a Autora</a></li>
+            <li><a href="#categorias">Categorias</a></li>
+            <li><a href="#artigos-section">Artigos do Blog</a></li>
+          </ul>
+        </div>
 
-<script src="js/data.js"></script>
-<script src="js/script.js"></script>
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const preview = document.getElementById("home-curio-preview");
-    const destaques = CURIOSIDADES.slice(0, 6);
-    preview.innerHTML = destaques.map(c => `
-      <article class="curio-card">
-        <span class="tag">${c.categoria}</span>
-        <h3>${c.titulo}</h3>
-        <p>${c.texto}</p>
-      </article>
-    `).join("");
-  });
-</script>
+        <div>
+          <h4>Seções Temáticas</h4>
+          <ul>
+            <li><a href="#categorias" onclick="window.blogManager.selectCategory('Direito Penal')">Direito Penal</a></li>
+            <li><a href="#categorias" onclick="window.blogManager.selectCategory('Direito Civil')">Direito Civil</a></li>
+            <li><a href="#categorias" onclick="window.blogManager.selectCategory('Direito Constitucional')">Direito Constitucional</a></li>
+            <li><a href="#categorias" onclick="window.blogManager.selectCategory('Direito do Trabalho')">Direito do Trabalho</a></li>
+            <li><a href="#categorias" onclick="window.blogManager.selectCategory('Direito Ambiental')">Direito Ambiental</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4>Outros Recursos</h4>
+          <ul>
+            <li><a href="curiosidades.html">Curiosidades Jurídicas</a></li>
+            <li><a href="glossario.html">Glossário Jurídico</a></li>
+            <li><a href="direitos.html">Áreas do Direito</a></li>
+            <li><a href="#" id="btn-open-login-footer">👑 Área da Autora (Login)</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <span>© <span id="year"></span> Legalmente Isabela — Papo de Direito. Todos os direitos reservados.</span>
+        <span>Conteúdo educativo e acadêmico. Não substitui consulta jurídica formal.</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/script.js"></script>
+  <script src="js/blog.js"></script>
 </body>
 </html>

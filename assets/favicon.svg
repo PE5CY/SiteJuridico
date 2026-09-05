@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="roseGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#e8cdca" />
+      <stop offset="50%" stop-color="#b06c74" />
+      <stop offset="100%" stop-color="#7c3f46" />
+    </linearGradient>
+    <linearGradient id="goldBorder" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fdfaf9" />
+      <stop offset="100%" stop-color="#ebd8d5" />
+    </linearGradient>
+  </defs>
+  <!-- Fundo Circular com Borda Suave -->
+  <circle cx="32" cy="32" r="30" fill="url(#roseGrad)" stroke="url(#goldBorder)" stroke-width="2" />
+  <!-- Monograma Isabela 'I' em Tipografia Serifada Clássica -->
+  <text x="32" y="43" font-family="'Cinzel', 'Cormorant Garamond', 'Georgia', serif" font-size="36" font-weight="700" fill="#ffffff" text-anchor="middle">I</text>
+</svg>

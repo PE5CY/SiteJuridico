@@ -1,0 +1,6 @@
+# Redirecionamentos amigáveis e fallback 404
+/curiosidades  /curiosidades.html  200
+/direitos      /direitos.html      200
+/glossario     /glossario.html     200
+/sobre         /sobre.html         200
+/*             /404.html           404
