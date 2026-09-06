@@ -69,12 +69,12 @@ CREATE POLICY "Atualizacao de credenciais"
 ON public.autora_config FOR ALL 
 USING (true);
 
--- 6. INSERÇÃO DAS CREDENCIAIS PADRÃO INICIAIS (Senha: isabela123)
+-- 6. INSERÇÃO DAS CREDENCIAIS PADRÃO INICIAIS (Senha: Isabela*2026)
 -- Hash derivado com 100.000 iterações de PBKDF2-HMAC-SHA256
 INSERT INTO public.autora_config (id, password_hash, salt, updated_at)
 VALUES (
     'admin_credentials',
-    '346ff15e706e0908c078fd0d146d8481ceffb4be665b7eae138d8d355c31ea49',
+    '7ae28547c881a2232d676bd5e18d96c989dfbb0b54cdf3b05a746d90abbda4a7',
     'a8f3b4c1e92d75f0',
     now()
 )
