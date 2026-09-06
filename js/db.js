@@ -204,14 +204,20 @@ class DatabaseService {
   /* ===== Operações com Credenciais de Administradora ===== */
 
   async fetchAdminCredentials(defaultSalt, defaultHash) {
-    // 1. Tenta buscar no banco de dados na nuvem
+    // 1. Tenta buscar no banco de dados na nuvem (com timeout resiliente para mobile)
     if (this.isConfigured()) {
       try {
-        const { data, error } = await this.client
+        const queryPromise = this.client
           .from("autora_config")
           .select("password_hash, salt")
           .eq("id", "admin_credentials")
           .maybeSingle();
+
+        const timeoutPromise = new Promise((_, reject) =>
+          setTimeout(() => reject(new Error("Timeout ao conectar ao Supabase")), 3500)
+        );
+
+        const { data, error } = await Promise.race([queryPromise, timeoutPromise]);
 
         if (!error && data && data.password_hash && data.salt) {
           localStorage.setItem(this.storageKeySalt, data.salt);
