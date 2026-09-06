@@ -538,7 +538,7 @@ class BlogManager {
     }
 
     const inputPass = form.querySelector("#input-admin-pass");
-    const enteredPass = inputPass ? inputPass.value : "";
+    const enteredPass = inputPass ? inputPass.value.trim() : "";
     const submitBtn = form.querySelector("button[type='submit']");
 
     if (!enteredPass) return;
@@ -554,10 +554,18 @@ class BlogManager {
         : { salt: localStorage.getItem(this.saltKey) || DEFAULT_SALT, hash: localStorage.getItem(this.hashKey) || DEFAULT_HASH };
 
       // Derivação de chave segura via PBKDF2-SHA256 (100.000 iterações)
-      const computedHash = await CryptoSecurity.hashPassword(enteredPass, storedSalt);
+      let computedHash = await CryptoSecurity.hashPassword(enteredPass, storedSalt);
 
       // Comparação constante de tempo para mitigar Timing Attacks
-      const isMatch = CryptoSecurity.timingSafeEqual(computedHash, storedHash);
+      let isMatch = CryptoSecurity.timingSafeEqual(computedHash, storedHash);
+
+      // Tolerância a teclado mobile: se for a senha padrão inicial, aceita também se o celular capitalizou a 1ª letra ("Isabela123")
+      if (!isMatch && storedHash === DEFAULT_HASH) {
+        const altHash = await CryptoSecurity.hashPassword(enteredPass.toLowerCase(), storedSalt);
+        if (CryptoSecurity.timingSafeEqual(altHash, storedHash)) {
+          isMatch = true;
+        }
+      }
 
       if (isMatch) {
         this.rateLimiter.recordSuccess();
@@ -582,7 +590,11 @@ class BlogManager {
       }
     } catch (err) {
       console.error("Erro no processamento criptográfico:", err);
-      alert("Ocorreu um erro no módulo criptográfico do navegador.");
+      if (!window.isSecureContext && (!window.crypto || !window.crypto.subtle)) {
+        alert("O seu navegador móvel bloqueou a criptografia por não estar em conexão segura HTTPS. Acesse o site pelo link oficial com HTTPS.");
+      } else {
+        alert("Erro no módulo criptográfico do navegador: " + (err.message || err));
+      }
     } finally {
       if (submitBtn) {
         submitBtn.disabled = false;

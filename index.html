@@ -512,10 +512,17 @@
               id="input-admin-pass" 
               class="form-input" 
               placeholder="Digite sua senha..." 
+              autocomplete="current-password"
+              autocapitalize="none"
+              autocorrect="off"
+              spellcheck="false"
               required 
             />
             <button type="button" class="btn-toggle-pass" id="btn-toggle-pass" title="Mostrar/ocultar senha">👁️</button>
           </div>
+          <small style="display: block; font-size: 0.78rem; color: var(--text-muted); margin-top: 6px;">
+            💡 Senha padrão: <strong style="color: var(--primary-rose-gold);">isabela123</strong> (tudo minúsculo). Toque no 👁️ para conferir.
+          </small>
         </div>
 
         <div class="form-footer" style="justify-content: space-between;">
@@ -760,9 +767,9 @@
 
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/db-config.js"></script>
-  <script src="js/db.js"></script>
-  <script src="js/script.js"></script>
-  <script src="js/blog.js"></script>
+  <script src="js/db-config.js?v=2"></script>
+  <script src="js/db.js?v=2"></script>
+  <script src="js/script.js?v=2"></script>
+  <script src="js/blog.js?v=2"></script>
 </body>
 </html>
