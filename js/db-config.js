@@ -10,9 +10,9 @@
  */
 
 window.SUPABASE_CONFIG = {
-  // Exemplo: "https://xyzexample.supabase.co"
-  url: "",
+  // URL da API do seu projeto Supabase
+  url: "https://nhwurfnoctjfyjswrizn.supabase.co",
   
-  // Exemplo: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  // Exemplo: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." (Copie de Project Settings > API > anon public)
   anonKey: ""
 };
