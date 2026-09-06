@@ -18,10 +18,15 @@ class DatabaseService {
 
   /* ===== Inicialização do Cliente Supabase ===== */
 
+  cleanUrl(rawUrl) {
+    if (!rawUrl) return "";
+    return rawUrl.trim().replace(/\/rest\/v1\/?$/i, "").replace(/\/$/, "");
+  }
+
   getCredentials() {
-    const url = (localStorage.getItem(this.storageKeyUrl) || (window.SUPABASE_CONFIG && window.SUPABASE_CONFIG.url) || "").trim();
+    const rawUrl = (localStorage.getItem(this.storageKeyUrl) || (window.SUPABASE_CONFIG && window.SUPABASE_CONFIG.url) || "").trim();
     const anonKey = (localStorage.getItem(this.storageKeyKey) || (window.SUPABASE_CONFIG && window.SUPABASE_CONFIG.anonKey) || "").trim();
-    return { url, anonKey };
+    return { url: this.cleanUrl(rawUrl), anonKey };
   }
 
   initClient() {
@@ -52,7 +57,7 @@ class DatabaseService {
       if (!window.supabase || typeof window.supabase.createClient !== "function") {
         return { ok: false, error: "Biblioteca Supabase CDN não carregada." };
       }
-      const testClient = window.supabase.createClient(customUrl, customKey);
+      const testClient = window.supabase.createClient(this.cleanUrl(customUrl), customKey);
       const { data, error } = await testClient.from("artigos").select("id").limit(1);
 
       if (error) {

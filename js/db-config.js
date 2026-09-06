@@ -14,5 +14,5 @@ window.SUPABASE_CONFIG = {
   url: "https://nhwurfnoctjfyjswrizn.supabase.co",
   
   // Exemplo: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." (Copie de Project Settings > API > anon public)
-  anonKey: ""
+  anonKey: "sb_publishable_XhyN4NOtoeZ2u2w-LNlcdw_e4BpLZp4"
 };
