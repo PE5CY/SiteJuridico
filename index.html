@@ -31,6 +31,7 @@
         <a href="#artigos-section">Artigos</a>
         <a href="curiosidades.html">Curiosidades</a>
         <a href="glossario.html">Glossário</a>
+        <a href="#" class="nav-item-mobile-login" onclick="event.preventDefault(); window.blogManager ? window.blogManager.openLoginModal(document.getElementById('modal-login')) : document.getElementById('modal-login').classList.add('open');">🔐 Área da Autora (Login)</a>
       </nav>
 
       <div class="header-actions">
@@ -52,7 +53,7 @@
         </div>
 
         <!-- Botão de Acesso para Visitantes / Login -->
-        <button id="btn-open-login" class="btn btn-outline btn-admin-login-trigger">
+        <button id="btn-open-login" class="btn btn-outline btn-admin-login-trigger" onclick="window.blogManager ? window.blogManager.openLoginModal(document.getElementById('modal-login')) : document.getElementById('modal-login').classList.add('open');">
           <span>🔐</span> Área da Autora
         </button>
 
@@ -753,7 +754,7 @@
             <li><a href="curiosidades.html">Curiosidades Jurídicas</a></li>
             <li><a href="glossario.html">Glossário Jurídico</a></li>
             <li><a href="direitos.html">Áreas do Direito</a></li>
-            <li><a href="#" id="btn-open-login-footer">👑 Área da Autora (Login)</a></li>
+            <li><a href="#" id="btn-open-login-footer" onclick="event.preventDefault(); window.blogManager ? window.blogManager.openLoginModal(document.getElementById('modal-login')) : document.getElementById('modal-login').classList.add('open');">👑 Área da Autora (Login)</a></li>
           </ul>
         </div>
       </div>

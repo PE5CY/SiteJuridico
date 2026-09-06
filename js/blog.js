@@ -1345,6 +1345,18 @@ class BlogManager {
   }
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  window.blogManager = new BlogManager();
-});
+function initBlogManager() {
+  if (!window.blogManager) {
+    try {
+      window.blogManager = new BlogManager();
+    } catch (e) {
+      console.error("Erro ao inicializar BlogManager:", e);
+    }
+  }
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initBlogManager);
+} else {
+  initBlogManager();
+}

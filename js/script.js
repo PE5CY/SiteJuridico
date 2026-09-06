@@ -1,6 +1,6 @@
 // Interações gerais do site: menu mobile, ano do rodapé e acordeão de áreas do direito.
 
-document.addEventListener("DOMContentLoaded", () => {
+function initGlobalInteractions() {
   const toggle = document.querySelector(".nav-toggle");
   const nav = document.querySelector(".main-nav");
   if (toggle && nav) {
@@ -15,6 +15,17 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
   }
+
+  // Tratamento especial para links com destino #sobre-autora
+  document.querySelectorAll('a[href="#sobre-autora"]').forEach((link) => {
+    link.addEventListener("click", (e) => {
+      const target = document.getElementById("sobre-autora");
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    });
+  });
 
   const yearEl = document.getElementById("year");
   if (yearEl) yearEl.textContent = new Date().getFullYear();
@@ -41,4 +52,10 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   });
-});
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initGlobalInteractions);
+} else {
+  initGlobalInteractions();
+}

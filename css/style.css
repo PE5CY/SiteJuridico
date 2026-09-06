@@ -814,6 +814,11 @@ img {
 /* ===== Seção Sobre a Autora (Referência Imagem 3) ===== */
 .author-section {
   padding: 60px 0;
+  scroll-margin-top: 80px;
+}
+
+.nav-item-mobile-login {
+  display: none;
 }
 
 .author-grid {
@@ -2256,6 +2261,19 @@ img {
 
   .site-header .main-nav.open {
     display: flex;
+  }
+
+  .nav-item-mobile-login {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg-soft-blush);
+    color: var(--rose-dark) !important;
+    font-weight: 700 !important;
+    padding: 10px 14px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-light);
+    margin-top: 6px;
   }
 
   .nav-toggle {
