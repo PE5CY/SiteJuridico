@@ -153,7 +153,7 @@ O sistema é 100% estático no frontend, o que significa que **não requer servi
 ## 🔐 Acesso da Autora (Painel de Administração)
 
 - **Como acessar**: Clique no botão **"🔐 Área da Autora"** no canto superior direito da página inicial ou no rodapé.
-- **Senha inicial padrão**: `isabela123`
+- **Senha inicial padrão**: `Isabela*2026` (ou `Isabela2026`, com suporte retrocompatível a `isabela123`)
 - **Como alterar a senha**:
   1. Faça login na Área da Autora.
   2. Clique no botão **"⚙️ Painel"** na barra superior.
