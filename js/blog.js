@@ -648,7 +648,7 @@ class BlogManager {
           alert("Limite de tentativas excedido. Por segurança, o acesso está bloqueado por 60 segundos.");
           this.closeModal(modal);
         } else {
-          alert(`Senha incorreta. Restam ${remaining} tentativa(s) antes do bloqueio temporário.\n\nDica: a senha padrão é Isabela*2026 (ou Isabela2026).`);
+          alert(`Senha incorreta. Restam ${remaining} tentativa(s) antes do bloqueio temporário.`);
         }
       }
     } catch (err) {
