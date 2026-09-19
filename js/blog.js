@@ -1541,16 +1541,26 @@ class BlogManager {
     if (!this.checkSession()) return;
     const modal = document.getElementById("modal-edit-glossario");
     if (modal) {
+      this.editingGlossarioIndex = -1;
+      const form = document.getElementById("form-add-glossario");
+      form.reset();
+      form.querySelector('button[type="submit"]').textContent = "+";
+      
       this.renderAdminGlossarioList();
       this.openModal(modal);
 
-      const form = document.getElementById("form-add-glossario");
       form.onsubmit = (e) => {
         e.preventDefault();
         const termo = document.getElementById("input-glossario-termo").value.trim();
         const definicao = document.getElementById("input-glossario-def").value.trim();
         if (termo && definicao) {
-          window.SITE_CONTENT.glossario.push({ termo, definicao });
+          if (this.editingGlossarioIndex >= 0) {
+            window.SITE_CONTENT.glossario[this.editingGlossarioIndex] = { termo, definicao };
+            this.editingGlossarioIndex = -1;
+            form.querySelector('button[type="submit"]').textContent = "+";
+          } else {
+            window.SITE_CONTENT.glossario.push({ termo, definicao });
+          }
           window.SITE_CONTENT.glossario.sort((a, b) => a.termo.localeCompare(b.termo, "pt-BR"));
           this.renderAdminGlossarioList();
           form.reset();
@@ -1571,15 +1581,37 @@ class BlogManager {
           <strong style="color: var(--text-title);">${this.escapeHtml(item.termo)}</strong><br>
           <small style="color: var(--text-muted);">${this.escapeHtml(item.definicao)}</small>
         </div>
-        <button class="btn btn-text-danger" onclick="window.blogManager.removeGlossarioItem(${index})">Remover</button>
+        <div style="display: flex; gap: 8px;">
+          <button class="btn btn-outline" style="font-size: 0.75rem; padding: 4px 8px;" onclick="window.blogManager.startEditGlossario(${index})">Editar</button>
+          <button class="btn btn-text-danger" style="font-size: 0.75rem; padding: 4px 8px;" onclick="window.blogManager.removeGlossarioItem(${index})">Remover</button>
+        </div>
       `;
       listEl.appendChild(div);
     });
   }
 
+  startEditGlossario(index) {
+    const item = window.SITE_CONTENT.glossario[index];
+    if (item) {
+      document.getElementById("input-glossario-termo").value = item.termo;
+      document.getElementById("input-glossario-def").value = item.definicao;
+      this.editingGlossarioIndex = index;
+      const form = document.getElementById("form-add-glossario");
+      form.querySelector('button[type="submit"]').textContent = "Salvar";
+      document.getElementById("input-glossario-termo").focus();
+    }
+  }
+
   removeGlossarioItem(index) {
     if (confirm("Remover este termo?")) {
       window.SITE_CONTENT.glossario.splice(index, 1);
+      if (this.editingGlossarioIndex === index) {
+        this.editingGlossarioIndex = -1;
+        document.getElementById("form-add-glossario").reset();
+        document.getElementById("form-add-glossario").querySelector('button[type="submit"]').textContent = "+";
+      } else if (this.editingGlossarioIndex > index) {
+        this.editingGlossarioIndex--;
+      }
       this.renderAdminGlossarioList();
     }
   }
@@ -1595,17 +1627,27 @@ class BlogManager {
     if (!this.checkSession()) return;
     const modal = document.getElementById("modal-edit-curiosidades");
     if (modal) {
+      this.editingCuriosidadeIndex = -1;
+      const form = document.getElementById("form-add-curiosidade");
+      form.reset();
+      form.querySelector('button[type="submit"]').textContent = "Adicionar Nova";
+
       this.renderAdminCuriosidadesList();
       this.openModal(modal);
 
-      const form = document.getElementById("form-add-curiosidade");
       form.onsubmit = (e) => {
         e.preventDefault();
         const categoria = document.getElementById("input-cur-cat").value.trim();
         const titulo = document.getElementById("input-cur-tit").value.trim();
         const texto = document.getElementById("input-cur-txt").value.trim();
         if (categoria && titulo && texto) {
-          window.SITE_CONTENT.curiosidades.unshift({ categoria, titulo, texto });
+          if (this.editingCuriosidadeIndex >= 0) {
+            window.SITE_CONTENT.curiosidades[this.editingCuriosidadeIndex] = { categoria, titulo, texto };
+            this.editingCuriosidadeIndex = -1;
+            form.querySelector('button[type="submit"]').textContent = "Adicionar Nova";
+          } else {
+            window.SITE_CONTENT.curiosidades.unshift({ categoria, titulo, texto });
+          }
           this.renderAdminCuriosidadesList();
           form.reset();
         }
@@ -1626,15 +1668,38 @@ class BlogManager {
           <br><strong style="color: var(--text-title);">${this.escapeHtml(item.titulo)}</strong>
           <br><small style="color: var(--text-muted);">${this.escapeHtml(item.texto)}</small>
         </div>
-        <button class="btn btn-text-danger" onclick="window.blogManager.removeCuriosidadeItem(${index})">Remover</button>
+        <div style="display: flex; gap: 8px;">
+          <button class="btn btn-outline" style="font-size: 0.75rem; padding: 4px 8px;" onclick="window.blogManager.startEditCuriosidade(${index})">Editar</button>
+          <button class="btn btn-text-danger" style="font-size: 0.75rem; padding: 4px 8px;" onclick="window.blogManager.removeCuriosidadeItem(${index})">Remover</button>
+        </div>
       `;
       listEl.appendChild(div);
     });
   }
 
+  startEditCuriosidade(index) {
+    const item = window.SITE_CONTENT.curiosidades[index];
+    if (item) {
+      document.getElementById("input-cur-cat").value = item.categoria;
+      document.getElementById("input-cur-tit").value = item.titulo;
+      document.getElementById("input-cur-txt").value = item.texto;
+      this.editingCuriosidadeIndex = index;
+      const form = document.getElementById("form-add-curiosidade");
+      form.querySelector('button[type="submit"]').textContent = "Salvar";
+      document.getElementById("input-cur-tit").focus();
+    }
+  }
+
   removeCuriosidadeItem(index) {
     if (confirm("Remover esta curiosidade?")) {
       window.SITE_CONTENT.curiosidades.splice(index, 1);
+      if (this.editingCuriosidadeIndex === index) {
+        this.editingCuriosidadeIndex = -1;
+        document.getElementById("form-add-curiosidade").reset();
+        document.getElementById("form-add-curiosidade").querySelector('button[type="submit"]').textContent = "Adicionar Nova";
+      } else if (this.editingCuriosidadeIndex > index) {
+        this.editingCuriosidadeIndex--;
+      }
       this.renderAdminCuriosidadesList();
     }
   }
