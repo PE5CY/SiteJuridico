@@ -1062,7 +1062,7 @@ class BlogManager {
     this.openModal(modal);
   }
 
-  handlePublishForm(form, modal) {
+  async handlePublishForm(form, modal) {
     if (!this.checkSession()) return;
 
     // Sanitização de entradas
