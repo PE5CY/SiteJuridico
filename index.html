@@ -657,7 +657,27 @@
         </form>
       </div>
 
-      <!-- Seção 4: Backup & Restauração de Conteúdo -->
+      <!-- Seção 4: Gestão de Conteúdo do Site -->
+      <div class="admin-panel-section">
+        <h3 class="admin-section-title">📝 Gestão de Conteúdo</h3>
+        <p class="admin-sec-info">
+          Altere os textos de apresentação, termos do glossário e curiosidades jurídicas do site em tempo real.
+        </p>
+
+        <div style="display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap;">
+          <button type="button" class="btn btn-outline" style="flex: 1;" onclick="window.blogManager.openEditSobre()">
+            Editar Sobre a Autora
+          </button>
+          <button type="button" class="btn btn-outline" style="flex: 1;" onclick="window.blogManager.openEditGlossario()">
+            Editar Glossário
+          </button>
+          <button type="button" class="btn btn-outline" style="flex: 1;" onclick="window.blogManager.openEditCuriosidades()">
+            Editar Curiosidades
+          </button>
+        </div>
+      </div>
+
+      <!-- Seção 5: Backup & Restauração de Dados -->
       <div class="admin-panel-section" style="border-bottom: none; margin-bottom: 0; padding-bottom: 0;">
         <h3 class="admin-section-title">💾 Backup & Restauração de Dados</h3>
         <p class="admin-sec-info">
@@ -690,6 +710,79 @@
       <button class="modal-close-btn" id="btn-close-reader" aria-label="Fechar leitor">✕</button>
       <div id="reader-content">
         <!-- Preenchido dinamicamente ao clicar em "Ler artigo" -->
+      </div>
+    </div>
+  </div>
+  <!-- Modal: Editar Sobre a Autora -->
+  <div class="modal-backdrop" id="modal-edit-sobre">
+    <div class="modal-card">
+      <button class="modal-close-btn" onclick="window.blogManager.closeModal(document.getElementById('modal-edit-sobre'))">✕</button>
+      <div class="modal-head">
+        <h2>📝 Editar Sobre a Autora</h2>
+        <p>Altere o texto principal que aparece na seção "Sobre" do site.</p>
+      </div>
+      <form id="form-edit-sobre">
+        <div class="form-group">
+          <label for="input-sobre-texto">Texto Sobre a Autora</label>
+          <textarea id="input-sobre-texto" class="form-input" rows="8" placeholder="Digite sobre o projeto e a autora..." required></textarea>
+        </div>
+        <div class="form-footer">
+          <button type="button" class="btn btn-outline" onclick="window.blogManager.closeModal(document.getElementById('modal-edit-sobre'))">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Salvar Texto</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Editar Glossário -->
+  <div class="modal-backdrop" id="modal-edit-glossario">
+    <div class="modal-card" style="max-width: 700px;">
+      <button class="modal-close-btn" onclick="window.blogManager.closeModal(document.getElementById('modal-edit-glossario'))">✕</button>
+      <div class="modal-head">
+        <h2>📖 Editar Glossário Jurídico</h2>
+        <p>Adicione, altere ou remova termos do glossário.</p>
+      </div>
+      <div class="admin-panel-section">
+        <form id="form-add-glossario" style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
+          <input type="text" id="input-glossario-termo" class="form-input" placeholder="Novo Termo" style="flex: 1;" required />
+          <input type="text" id="input-glossario-def" class="form-input" placeholder="Definição" style="flex: 2;" required />
+          <button type="submit" class="btn btn-primary">+</button>
+        </form>
+        <div id="admin-glossario-list" style="max-height: 400px; overflow-y: auto;">
+          <!-- Itens preenchidos via JS -->
+        </div>
+      </div>
+      <div class="form-footer">
+        <button type="button" class="btn btn-outline" onclick="window.blogManager.closeModal(document.getElementById('modal-edit-glossario'))">Fechar</button>
+        <button type="button" class="btn btn-primary" onclick="window.blogManager.saveGlossario()">Salvar Alterações na Nuvem</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Editar Curiosidades -->
+  <div class="modal-backdrop" id="modal-edit-curiosidades">
+    <div class="modal-card" style="max-width: 700px;">
+      <button class="modal-close-btn" onclick="window.blogManager.closeModal(document.getElementById('modal-edit-curiosidades'))">✕</button>
+      <div class="modal-head">
+        <h2>💡 Editar Curiosidades</h2>
+        <p>Adicione, altere ou remova curiosidades do site.</p>
+      </div>
+      <div class="admin-panel-section">
+        <form id="form-add-curiosidade" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;">
+          <div style="display: flex; gap: 10px;">
+            <input type="text" id="input-cur-cat" class="form-input" placeholder="Categoria (ex: Civil)" style="flex: 1;" required />
+            <input type="text" id="input-cur-tit" class="form-input" placeholder="Título" style="flex: 2;" required />
+          </div>
+          <textarea id="input-cur-txt" class="form-input" rows="2" placeholder="Texto da curiosidade..." required></textarea>
+          <button type="submit" class="btn btn-primary">Adicionar Nova</button>
+        </form>
+        <div id="admin-curiosidades-list" style="max-height: 350px; overflow-y: auto;">
+          <!-- Itens preenchidos via JS -->
+        </div>
+      </div>
+      <div class="form-footer">
+        <button type="button" class="btn btn-outline" onclick="window.blogManager.closeModal(document.getElementById('modal-edit-curiosidades'))">Fechar</button>
+        <button type="button" class="btn btn-primary" onclick="window.blogManager.saveCuriosidades()">Salvar Alterações na Nuvem</button>
       </div>
     </div>
   </div>

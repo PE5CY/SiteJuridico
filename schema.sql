@@ -176,3 +176,23 @@ ON CONFLICT (id) DO UPDATE SET
     categoria = EXCLUDED.categoria,
     resumo = EXCLUDED.resumo,
     conteudo = EXCLUDED.conteudo;
+
+-- 8. TABELA DE CONTEÚDO DINÂMICO DO SITE (Sobre, Glossário, Curiosidades)
+CREATE TABLE IF NOT EXISTS public.site_content (
+    id TEXT PRIMARY KEY,
+    content JSONB NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+ALTER TABLE public.site_content ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Leitura publica de conteudo" ON public.site_content;
+CREATE POLICY "Leitura publica de conteudo" 
+ON public.site_content FOR SELECT 
+USING (true);
+
+DROP POLICY IF EXISTS "Atualizacao de conteudo" ON public.site_content;
+CREATE POLICY "Atualizacao de conteudo" 
+ON public.site_content FOR ALL 
+USING (true);
+

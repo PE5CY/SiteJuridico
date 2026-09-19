@@ -9,7 +9,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function render(termoBusca) {
     const termo = (termoBusca || "").trim().toLowerCase();
-    const itens = GLOSSARIO.filter(
+    const glossarioData = (window.SITE_CONTENT && window.SITE_CONTENT.glossario) ? window.SITE_CONTENT.glossario : (window.GLOSSARIO || []);
+    const itens = glossarioData.filter(
       (g) =>
         !termo ||
         g.termo.toLowerCase().includes(termo) ||
@@ -31,7 +32,8 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function renderJump() {
-    const letras = Array.from(new Set(GLOSSARIO.map((g) => g.termo[0].toUpperCase()))).sort();
+    const glossarioData = (window.SITE_CONTENT && window.SITE_CONTENT.glossario) ? window.SITE_CONTENT.glossario : (window.GLOSSARIO || []);
+    const letras = Array.from(new Set(glossarioData.map((g) => g.termo[0].toUpperCase()))).sort();
     jump.innerHTML = "";
     letras.forEach((letra) => {
       const a = document.createElement("a");
@@ -45,6 +47,14 @@ document.addEventListener("DOMContentLoaded", () => {
     searchInput.addEventListener("input", (e) => render(e.target.value));
   }
 
-  renderJump();
-  render("");
+  const initGlossario = () => {
+    renderJump();
+    render("");
+  };
+
+  if (window.SITE_CONTENT && window.SITE_CONTENT.glossario) {
+    initGlossario();
+  } else {
+    document.addEventListener("siteContentReady", initGlossario);
+  }
 });

@@ -296,6 +296,58 @@ class DatabaseService {
       return { ok: false, error: e.message };
     }
   }
+  /* ===== Conteúdo Dinâmico do Site ===== */
+
+  async fetchSiteContent(id, fallbackContent = null) {
+    if (this.isConfigured()) {
+      try {
+        const { data, error } = await this.client
+          .from("site_content")
+          .select("content")
+          .eq("id", id)
+          .maybeSingle();
+
+        if (!error && data && data.content) {
+          localStorage.setItem(`legalmente_isabela_content_${id}`, JSON.stringify(data.content));
+          return data.content;
+        }
+      } catch (e) {
+        console.warn(`Erro ao buscar conteúdo da nuvem (${id}):`, e);
+      }
+    }
+
+    const localData = localStorage.getItem(`legalmente_isabela_content_${id}`);
+    if (localData) {
+      try {
+        return JSON.parse(localData);
+      } catch (e) {}
+    }
+
+    return fallbackContent;
+  }
+
+  async saveSiteContent(id, contentObj) {
+    localStorage.setItem(`legalmente_isabela_content_${id}`, JSON.stringify(contentObj));
+
+    if (this.isConfigured()) {
+      try {
+        const payload = {
+          id: id,
+          content: contentObj,
+          updated_at: new Date().toISOString()
+        };
+        const { error } = await this.client
+          .from("site_content")
+          .upsert([payload], { onConflict: "id" });
+        if (error) throw error;
+        return { ok: true, cloud: true };
+      } catch (e) {
+        console.error(`Erro ao salvar conteúdo na nuvem (${id}):`, e);
+        return { ok: true, localOnly: true, error: e.message };
+      }
+    }
+    return { ok: true, localOnly: true };
+  }
 
   getLocalArticles() {
     try {

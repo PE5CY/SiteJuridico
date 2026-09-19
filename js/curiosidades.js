@@ -11,9 +11,16 @@ document.addEventListener("DOMContentLoaded", () => {
   let categoriaAtiva = "Todas";
   let termoBusca = "";
 
+  function getCuriosidades() {
+    return (window.SITE_CONTENT && window.SITE_CONTENT.curiosidades) ? window.SITE_CONTENT.curiosidades : (window.CURIOSIDADES || []);
+  }
+
   function renderFiltros() {
     filterBar.innerHTML = "";
-    CATEGORIAS_CURIOSIDADES.forEach((cat) => {
+    const curiosidadesData = getCuriosidades();
+    const categorias = ["Todas", ...Array.from(new Set(curiosidadesData.map(c => c.categoria))).sort()];
+
+    categorias.forEach((cat) => {
       const btn = document.createElement("button");
       btn.textContent = cat;
       btn.className = cat === categoriaAtiva ? "active" : "";
@@ -28,7 +35,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function renderGrid() {
     const termo = termoBusca.trim().toLowerCase();
-    const lista = CURIOSIDADES.filter((c) => {
+    const curiosidadesData = getCuriosidades();
+    const lista = curiosidadesData.filter((c) => {
       const matchCategoria = categoriaAtiva === "Todas" || c.categoria === categoriaAtiva;
       const matchBusca =
         !termo ||
@@ -63,6 +71,14 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  renderFiltros();
-  renderGrid();
+  const initCuriosidades = () => {
+    renderFiltros();
+    renderGrid();
+  };
+
+  if (window.SITE_CONTENT && window.SITE_CONTENT.curiosidades) {
+    initCuriosidades();
+  } else {
+    document.addEventListener("siteContentReady", initCuriosidades);
+  }
 });

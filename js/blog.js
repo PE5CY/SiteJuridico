@@ -303,6 +303,9 @@ class BlogManager {
 
     // Carrega artigos da nuvem (ou cache local resiliente)
     await this.loadArticlesFromDb();
+    
+    // Carrega o conteúdo dinâmico do site
+    await this.loadSiteContent();
   }
 
   async loadArticlesFromDb() {
@@ -1470,6 +1473,177 @@ class BlogManager {
       .replace(/>/g, "&gt;")
       .replace(/"/g, "&quot;")
       .replace(/'/g, "&#039;");
+  }
+
+  /* ===== Gestão de Conteúdo Dinâmico ===== */
+
+  async loadSiteContent() {
+    window.SITE_CONTENT = window.SITE_CONTENT || {};
+    if (window.dbService) {
+      window.SITE_CONTENT.sobre = await window.dbService.fetchSiteContent("sobre", "");
+      window.SITE_CONTENT.glossario = await window.dbService.fetchSiteContent("glossario", window.GLOSSARIO || []);
+      window.SITE_CONTENT.curiosidades = await window.dbService.fetchSiteContent("curiosidades", window.CURIOSIDADES || []);
+    } else {
+      window.SITE_CONTENT.sobre = "";
+      window.SITE_CONTENT.glossario = window.GLOSSARIO || [];
+      window.SITE_CONTENT.curiosidades = window.CURIOSIDADES || [];
+    }
+
+    // Injeta texto "Sobre" na home se existir e estiver preenchido
+    this.renderSobreText();
+    
+    // Dispara evento para outras páginas (glossário, curiosidades) saberem que podem renderizar
+    document.dispatchEvent(new Event('siteContentReady'));
+  }
+
+  renderSobreText() {
+    const defaultText = "Meu nome é Isabela e sou estudante de Direito, apaixonada pelo conhecimento jurídico e pela constante busca por aprendizado.\n\nCriei o Papo de Direito com o objetivo de compartilhar estudos, reflexões e análises sobre temas relevantes do universo jurídico, tornando o Direito mais acessível e contribuindo para o desenvolvimento acadêmico e profissional de estudantes e interessados na área.";
+    const textToUse = window.SITE_CONTENT.sobre || defaultText;
+    
+    // Converte quebras de linha em <p> para manter a formatação
+    const formattedHtml = textToUse.split('\n').filter(p => p.trim() !== '').map(p => `<p>${this.escapeHtml(p)}</p>`).join('');
+
+    // No index.html
+    const homeSobre = document.querySelector(".author-bio");
+    if (homeSobre) homeSobre.innerHTML = formattedHtml;
+
+    // No sobre.html
+    const pageSobre = document.querySelector(".page-hero p");
+    if (pageSobre && window.location.pathname.includes("sobre.html")) {
+      pageSobre.textContent = textToUse.replace(/\n/g, ' '); // No hero do sobre, fica numa linha só ou quebra normal
+    }
+  }
+
+  openEditSobre() {
+    if (!this.checkSession()) return;
+    const modal = document.getElementById("modal-edit-sobre");
+    const input = document.getElementById("input-sobre-texto");
+    if (modal && input) {
+      input.value = window.SITE_CONTENT.sobre || "";
+      this.openModal(modal);
+
+      const form = document.getElementById("form-edit-sobre");
+      form.onsubmit = async (e) => {
+        e.preventDefault();
+        const novoTexto = input.value.trim();
+        window.SITE_CONTENT.sobre = novoTexto;
+        this.renderSobreText();
+        this.closeModal(modal);
+        if (window.dbService) {
+          await window.dbService.saveSiteContent("sobre", novoTexto);
+          this.showToast("Texto 'Sobre' salvo com sucesso!");
+        }
+      };
+    }
+  }
+
+  openEditGlossario() {
+    if (!this.checkSession()) return;
+    const modal = document.getElementById("modal-edit-glossario");
+    if (modal) {
+      this.renderAdminGlossarioList();
+      this.openModal(modal);
+
+      const form = document.getElementById("form-add-glossario");
+      form.onsubmit = (e) => {
+        e.preventDefault();
+        const termo = document.getElementById("input-glossario-termo").value.trim();
+        const definicao = document.getElementById("input-glossario-def").value.trim();
+        if (termo && definicao) {
+          window.SITE_CONTENT.glossario.push({ termo, definicao });
+          window.SITE_CONTENT.glossario.sort((a, b) => a.termo.localeCompare(b.termo, "pt-BR"));
+          this.renderAdminGlossarioList();
+          form.reset();
+        }
+      };
+    }
+  }
+
+  renderAdminGlossarioList() {
+    const listEl = document.getElementById("admin-glossario-list");
+    if (!listEl) return;
+    listEl.innerHTML = "";
+    (window.SITE_CONTENT.glossario || []).forEach((item, index) => {
+      const div = document.createElement("div");
+      div.style.cssText = "display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid var(--border-light);";
+      div.innerHTML = `
+        <div style="flex: 1;">
+          <strong style="color: var(--text-title);">${this.escapeHtml(item.termo)}</strong><br>
+          <small style="color: var(--text-muted);">${this.escapeHtml(item.definicao)}</small>
+        </div>
+        <button class="btn btn-text-danger" onclick="window.blogManager.removeGlossarioItem(${index})">Remover</button>
+      `;
+      listEl.appendChild(div);
+    });
+  }
+
+  removeGlossarioItem(index) {
+    if (confirm("Remover este termo?")) {
+      window.SITE_CONTENT.glossario.splice(index, 1);
+      this.renderAdminGlossarioList();
+    }
+  }
+
+  async saveGlossario() {
+    if (window.dbService) {
+      await window.dbService.saveSiteContent("glossario", window.SITE_CONTENT.glossario);
+      this.showToast("Glossário atualizado com sucesso!");
+    }
+  }
+
+  openEditCuriosidades() {
+    if (!this.checkSession()) return;
+    const modal = document.getElementById("modal-edit-curiosidades");
+    if (modal) {
+      this.renderAdminCuriosidadesList();
+      this.openModal(modal);
+
+      const form = document.getElementById("form-add-curiosidade");
+      form.onsubmit = (e) => {
+        e.preventDefault();
+        const categoria = document.getElementById("input-cur-cat").value.trim();
+        const titulo = document.getElementById("input-cur-tit").value.trim();
+        const texto = document.getElementById("input-cur-txt").value.trim();
+        if (categoria && titulo && texto) {
+          window.SITE_CONTENT.curiosidades.unshift({ categoria, titulo, texto });
+          this.renderAdminCuriosidadesList();
+          form.reset();
+        }
+      };
+    }
+  }
+
+  renderAdminCuriosidadesList() {
+    const listEl = document.getElementById("admin-curiosidades-list");
+    if (!listEl) return;
+    listEl.innerHTML = "";
+    (window.SITE_CONTENT.curiosidades || []).forEach((item, index) => {
+      const div = document.createElement("div");
+      div.style.cssText = "display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid var(--border-light);";
+      div.innerHTML = `
+        <div style="flex: 1; padding-right: 10px;">
+          <span style="font-size: 0.7rem; background: var(--bg-soft-blush); padding: 2px 6px; border-radius: 4px; color: var(--primary-rose-gold);">${this.escapeHtml(item.categoria)}</span>
+          <br><strong style="color: var(--text-title);">${this.escapeHtml(item.titulo)}</strong>
+          <br><small style="color: var(--text-muted);">${this.escapeHtml(item.texto)}</small>
+        </div>
+        <button class="btn btn-text-danger" onclick="window.blogManager.removeCuriosidadeItem(${index})">Remover</button>
+      `;
+      listEl.appendChild(div);
+    });
+  }
+
+  removeCuriosidadeItem(index) {
+    if (confirm("Remover esta curiosidade?")) {
+      window.SITE_CONTENT.curiosidades.splice(index, 1);
+      this.renderAdminCuriosidadesList();
+    }
+  }
+
+  async saveCuriosidades() {
+    if (window.dbService) {
+      await window.dbService.saveSiteContent("curiosidades", window.SITE_CONTENT.curiosidades);
+      this.showToast("Curiosidades atualizadas com sucesso!");
+    }
   }
 }
 
