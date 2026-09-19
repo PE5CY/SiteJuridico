@@ -1,21 +1,26 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Glossário Jurídico — Legalmente Isabela</title>
-  <meta name="description" content="Glossário com termos jurídicos comuns explicados em linguagem simples e acessível." />
+  <meta name="description"
+    content="Glossário com termos jurídicos comuns explicados em linguagem simples e acessível." />
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
   <link rel="alternate icon" href="favicon.svg" />
   <meta property="og:type" content="article" />
   <meta property="og:title" content="Glossário Jurídico — Legalmente Isabela" />
-  <meta property="og:description" content="Dicionário prático com termos, expressões em latim e conceitos jurídicos traduzidos de forma descomplicada." />
+  <meta property="og:description"
+    content="Dicionário prático com termos, expressões em latim e conceitos jurídicos traduzidos de forma descomplicada." />
   <meta property="og:image" content="assets/img/banner-hero.png" />
   <link rel="stylesheet" href="css/style.css" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob:; script-src 'self' 'unsafe-inline';" />
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob:; script-src 'self' 'unsafe-inline';" />
   <meta http-equiv="X-Content-Type-Options" content="nosniff" />
   <meta name="referrer" content="strict-origin-when-cross-origin" />
 </head>
+
 <body>
 
   <header class="site-header">
@@ -46,7 +51,8 @@
     <div class="container">
       <span class="eyebrow">Do juridiquês ao português claro</span>
       <h1>Glossário Jurídico</h1>
-      <p>Termos técnicos do direito, explicados de forma simples e direta, para você entender melhor contratos, sentenças e notícias jurídicas.</p>
+      <p>Termos técnicos do direito, explicados de forma simples e direta, para você entender melhor contratos,
+        sentenças e notícias jurídicas.</p>
     </div>
   </section>
 
@@ -73,7 +79,8 @@
       <div class="footer-grid">
         <div>
           <h4>Legalmente Isabela</h4>
-          <p>Papo de Direito — Espaço acadêmico e educativo com reflexões, pesquisas e análises do universo jurídico, promovendo um Direito acessível e dinâmico.</p>
+          <p>Papo de Direito — Espaço acadêmico e educativo com reflexões, pesquisas e análises do universo jurídico,
+            promovendo um Direito acessível e dinâmico.</p>
         </div>
         <div>
           <h4>Navegação</h4>
@@ -110,5 +117,20 @@
   <script src="js/data.js"></script>
   <script src="js/script.js"></script>
   <script src="js/glossario.js"></script>
+  <!-- Biblioteca Supabase (sempre em primeiro) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- Configuração da URL e anonKey -->
+  <script src="js/db-config.js"></script>
+
+  <!-- Métodos de consulta ao banco -->
+  <script src="js/db.js"></script>
+
+  <!-- Script de dados/fallback local (se houver) -->
+  <script src="js/data.js"></script>
+
+  <!-- Script específico de cada página (ex: glossario.js, curiosidades.js, script.js) -->
+  <script src="js/glossario.js"></script>
 </body>
+
 </html>

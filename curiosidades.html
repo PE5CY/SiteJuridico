@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Curiosidades Jurídicas — Legalmente Isabela</title>
-  <meta name="description" content="Curiosidades sobre o mundo do direito: história, expressões em latim, leis brasileiras e fatos pouco conhecidos." />
+  <meta name="description"
+    content="Curiosidades sobre o mundo do direito: história, expressões em latim, leis brasileiras e fatos pouco conhecidos." />
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
   <link rel="alternate icon" href="favicon.svg" />
   <meta property="og:type" content="article" />
@@ -12,10 +14,12 @@
   <meta property="og:description" content="Fatos históricos, expressões em latim e curiosidades do mundo do Direito." />
   <meta property="og:image" content="assets/img/banner-hero.png" />
   <link rel="stylesheet" href="css/style.css" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob:; script-src 'self' 'unsafe-inline';" />
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob:; script-src 'self' 'unsafe-inline';" />
   <meta http-equiv="X-Content-Type-Options" content="nosniff" />
   <meta name="referrer" content="strict-origin-when-cross-origin" />
 </head>
+
 <body>
 
   <header class="site-header">
@@ -46,7 +50,8 @@
     <div class="container">
       <span class="eyebrow">Mosaico jurídico</span>
       <h1>Curiosidades sobre Direito</h1>
-      <p>Fatos históricos, origens de expressões em latim e detalhes pouco conhecidos das leis brasileiras e do direito ao redor do mundo. Use a busca ou os filtros para explorar por tema.</p>
+      <p>Fatos históricos, origens de expressões em latim e detalhes pouco conhecidos das leis brasileiras e do direito
+        ao redor do mundo. Use a busca ou os filtros para explorar por tema.</p>
     </div>
   </section>
 
@@ -75,7 +80,9 @@
       <div class="disclaimer">
         <span class="ico">ℹ️</span>
         <div>
-          <strong>Aviso:</strong> as informações desta página têm caráter educativo e geral. Leis mudam com o tempo e podem ter interpretações distintas — para decisões pessoais, consulte sempre um advogado ou fonte oficial atualizada.
+          <strong>Aviso:</strong> as informações desta página têm caráter educativo e geral. Leis mudam com o tempo e
+          podem ter interpretações distintas — para decisões pessoais, consulte sempre um advogado ou fonte oficial
+          atualizada.
         </div>
       </div>
     </div>
@@ -86,7 +93,8 @@
       <div class="footer-grid">
         <div>
           <h4>Legalmente Isabela</h4>
-          <p>Papo de Direito — Espaço acadêmico e educativo com reflexões, pesquisas e análises do universo jurídico, promovendo um Direito acessível e dinâmico.</p>
+          <p>Papo de Direito — Espaço acadêmico e educativo com reflexões, pesquisas e análises do universo jurídico,
+            promovendo um Direito acessível e dinâmico.</p>
         </div>
         <div>
           <h4>Navegação</h4>
@@ -123,5 +131,20 @@
   <script src="js/data.js"></script>
   <script src="js/script.js"></script>
   <script src="js/curiosidades.js"></script>
+  <!-- Biblioteca Supabase (sempre em primeiro) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- Configuração da URL e anonKey -->
+  <script src="js/db-config.js"></script>
+
+  <!-- Métodos de consulta ao banco -->
+  <script src="js/db.js"></script>
+
+  <!-- Script de dados/fallback local (se houver) -->
+  <script src="js/data.js"></script>
+
+  <!-- Script específico de cada página (ex: glossario.js, curiosidades.js, script.js) -->
+  <script src="js/glossario.js"></script>
 </body>
+
 </html>
