@@ -770,7 +770,17 @@
       <div class="admin-panel-section">
         <form id="form-add-curiosidade" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;">
           <div style="display: flex; gap: 10px;">
-            <input type="text" id="input-cur-cat" class="form-input" placeholder="Categoria (ex: Civil)" style="flex: 1;" required />
+            <select id="input-cur-cat" class="form-input" style="flex: 1;" required>
+              <option value="" disabled selected>Categoria...</option>
+              <option value="Direito Civil">Direito Civil</option>
+              <option value="Direito Penal">Direito Penal</option>
+              <option value="Direito Constitucional">Direito Const.</option>
+              <option value="Direito do Trabalho">Direito Trabalhista</option>
+              <option value="Direito Ambiental">Direito Ambiental</option>
+              <option value="História do Direito">História</option>
+              <option value="Processo Civil">Processo Civil</option>
+              <option value="Processo Penal">Processo Penal</option>
+            </select>
             <input type="text" id="input-cur-tit" class="form-input" placeholder="Título" style="flex: 2;" required />
           </div>
           <textarea id="input-cur-txt" class="form-input" rows="2" placeholder="Texto da curiosidade..." required></textarea>
