@@ -296,7 +296,7 @@ class BlogManager {
     this.setupEventListeners();
     this.setupDatabaseEventListeners();
     this.updateAdminUI();
-    this.loadSavedPhoto();
+    await this.loadSavedPhoto();
 
     // Sincroniza credenciais da nuvem (ou fallback local)
     await this.ensureAdminCredentials();
@@ -1361,6 +1361,9 @@ class BlogManager {
             const rawDataUrl = event.target.result;
             const compressedDataUrl = await this.compressImage(rawDataUrl, 600, 600, 0.85);
             localStorage.setItem(this.photoStorageKey, compressedDataUrl);
+            if (window.dbService) {
+              await window.dbService.saveSiteContent("foto_autora", compressedDataUrl);
+            }
             this.applyPhoto(compressedDataUrl);
             this.showToast("Foto da autora otimizada e salva com sucesso! 📷✨");
           } catch (err) {
@@ -1373,9 +1376,12 @@ class BlogManager {
     }
 
     if (removeBtn) {
-      removeBtn.addEventListener("click", () => {
+      removeBtn.addEventListener("click", async () => {
         if (!this.checkSession()) return;
         localStorage.removeItem(this.photoStorageKey);
+        if (window.dbService) {
+          await window.dbService.saveSiteContent("foto_autora", "");
+        }
         this.clearPhoto();
         this.showToast("Foto removida. Espaço vazio restaurado.");
       });
@@ -1417,10 +1423,18 @@ class BlogManager {
     });
   }
 
-  loadSavedPhoto() {
-    const saved = localStorage.getItem(this.photoStorageKey);
+  async loadSavedPhoto() {
+    let saved = null;
+    if (window.dbService) {
+      saved = await window.dbService.fetchSiteContent("foto_autora", "");
+    }
+    if (!saved) {
+      saved = localStorage.getItem(this.photoStorageKey);
+    }
     if (saved) {
       this.applyPhoto(saved);
+      // Mantém em sincronia no localStorage
+      localStorage.setItem(this.photoStorageKey, saved);
     } else {
       this.clearPhoto();
     }
