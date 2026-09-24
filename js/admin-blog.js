@@ -1667,18 +1667,18 @@ class AdminManager {
   }
 }
 
-function initBlogManager() {
+function initAdminManager() {
   if (!window.adminManager) {
     try {
-      window.adminManager = new BlogManager();
+      window.adminManager = new AdminManager();
     } catch (e) {
-      console.error("Erro ao inicializar BlogManager:", e);
+      console.error("Erro ao inicializar AdminManager:", e);
     }
   }
 }
 
 if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", initBlogManager);
+  document.addEventListener("DOMContentLoaded", initAdminManager);
 } else {
-  initBlogManager();
+  initAdminManager();
 }
