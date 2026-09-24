@@ -277,6 +277,7 @@ class SessionManager {
 class BlogManager {
   constructor() {
     this.storageKey = "legalmente_isabela_posts";
+    this.photoStorageKey = "legalmente_isabela_photo";
     this.editingArticleId = null;
     this.currentCategory = "Todas";
     this.searchQuery = "";
@@ -287,6 +288,7 @@ class BlogManager {
   async init() {
     this.setupEventListeners();
     this.setupDatabaseEventListeners();
+    await this.loadSavedPhoto();
     // Carrega artigos da nuvem (ou cache local resiliente)
     await this.loadArticlesFromDb();
     
@@ -986,6 +988,55 @@ class BlogManager {
     if (window.dbService) {
       await window.dbService.saveSiteContent("curiosidades", window.SITE_CONTENT.curiosidades);
       this.showToast("Curiosidades atualizadas com sucesso!");
+    }
+  }
+
+  async loadSavedPhoto() {
+    let saved = null;
+    if (window.dbService) {
+      saved = await window.dbService.fetchSiteContent("foto_autora", "");
+    }
+    if (!saved) {
+      saved = localStorage.getItem(this.photoStorageKey);
+    }
+    if (saved) {
+      this.applyPhoto(saved);
+      // Mantém em sincronia no localStorage
+      localStorage.setItem(this.photoStorageKey, saved);
+    } else {
+      this.clearPhoto();
+    }
+  }
+
+  applyPhoto(src) {
+    const slot = document.getElementById("author-photo-slot");
+    const removeBtn = document.getElementById("btn-remove-photo");
+    if (slot) {
+      // Sanitização básica da URL
+      const cleanSrc = this.escapeHtml(src);
+      slot.innerHTML = `<img src="${cleanSrc}" alt="Foto de Isabela" class="author-img-loaded" />`;
+      slot.classList.add("has-photo");
+    }
+    if (removeBtn) {
+      removeBtn.style.display = "inline-flex";
+    }
+  }
+
+  clearPhoto() {
+    const slot = document.getElementById("author-photo-slot");
+    const removeBtn = document.getElementById("btn-remove-photo");
+    if (slot) {
+      slot.classList.remove("has-photo");
+      slot.innerHTML = `
+        <div class="photo-placeholder-box">
+          <div class="photo-icon">📷</div>
+          <span class="photo-label">Espaço para Foto da Autora</span>
+          <small class="photo-hint">Adicione sua foto aqui quando desejar</small>
+        </div>
+      `;
+    }
+    if (removeBtn) {
+      removeBtn.style.display = "none";
     }
   }
 }
