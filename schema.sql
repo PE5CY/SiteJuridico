@@ -40,23 +40,23 @@ CREATE POLICY "Leitura publica de artigos"
 ON public.artigos FOR SELECT 
 USING (true);
 
--- Permissão de inserção para clientes do blog
+-- Permissão de inserção para clientes do blog (desabilitada para anônimos, apenas via serviço seguro se configurado com RLS Role)
 DROP POLICY IF EXISTS "Insercao de artigos" ON public.artigos;
 CREATE POLICY "Insercao de artigos" 
 ON public.artigos FOR INSERT 
-WITH CHECK (true);
+WITH CHECK (false);
 
--- Permissão de atualização de artigos
+-- Permissão de atualização de artigos (desabilitada para anônimos)
 DROP POLICY IF EXISTS "Atualizacao de artigos" ON public.artigos;
 CREATE POLICY "Atualizacao de artigos" 
 ON public.artigos FOR UPDATE 
-USING (true);
+USING (false);
 
--- Permissão de exclusão de artigos
+-- Permissão de exclusão de artigos (desabilitada para anônimos)
 DROP POLICY IF EXISTS "Exclusao de artigos" ON public.artigos;
 CREATE POLICY "Exclusao de artigos" 
 ON public.artigos FOR DELETE 
-USING (true);
+USING (false);
 
 -- 5. POLÍTICAS DE SEGURANÇA PARA AS CREDENCIAIS DA AUTORA
 DROP POLICY IF EXISTS "Leitura de credenciais protegidas" ON public.autora_config;
@@ -67,7 +67,7 @@ USING (true);
 DROP POLICY IF EXISTS "Atualizacao de credenciais" ON public.autora_config;
 CREATE POLICY "Atualizacao de credenciais" 
 ON public.autora_config FOR ALL 
-USING (true);
+USING (false);
 
 -- 6. INSERÇÃO DAS CREDENCIAIS PADRÃO INICIAIS (Senha: Isabela*2026)
 -- Hash derivado com 100.000 iterações de PBKDF2-HMAC-SHA256
@@ -194,5 +194,5 @@ USING (true);
 DROP POLICY IF EXISTS "Atualizacao de conteudo" ON public.site_content;
 CREATE POLICY "Atualizacao de conteudo" 
 ON public.site_content FOR ALL 
-USING (true);
+USING (false);
 

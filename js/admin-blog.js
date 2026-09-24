@@ -274,9 +274,17 @@ class SessionManager {
 }
 
 /* ===== Gerenciador Principal do Blog ===== */
-class BlogManager {
+class AdminManager {
   constructor() {
     this.storageKey = "legalmente_isabela_posts";
+    this.photoStorageKey = "legalmente_isabela_photo";
+    this.saltKey = "legalmente_isabela_admin_salt";
+    this.hashKey = "legalmente_isabela_admin_hash";
+
+    this.rateLimiter = new RateLimiter();
+    this.sessionManager = new SessionManager();
+
+    this.isAdmin = true;
     this.editingArticleId = null;
     this.currentCategory = "Todas";
     this.searchQuery = "";
@@ -287,6 +295,12 @@ class BlogManager {
   async init() {
     this.setupEventListeners();
     this.setupDatabaseEventListeners();
+    this.updateAdminUI();
+    await this.loadSavedPhoto();
+
+    // Sincroniza credenciais da nuvem (ou fallback local)
+    await this.ensureAdminCredentials();
+
     // Carrega artigos da nuvem (ou cache local resiliente)
     await this.loadArticlesFromDb();
     
@@ -410,7 +424,112 @@ class BlogManager {
       });
     });
 
-    
+    // Botão de Nova Publicação (Restrito - Top Bar e Navbar)
+    document.querySelectorAll("#btn-open-publish, .btn-open-publish").forEach(btn => {
+      btn.addEventListener("click", () => {
+        this.openPublishModal();
+      });
+    });
+
+    const btnClosePublish = document.getElementById("btn-close-publish");
+    const modalPublish = document.getElementById("modal-publish");
+    if (btnClosePublish && modalPublish) {
+      btnClosePublish.addEventListener("click", () => {
+        this.closeModal(modalPublish);
+      });
+    }
+
+    // Submissão do Formulário de Publicação/Edição
+    const formPublish = document.getElementById("form-publish");
+    if (formPublish && modalPublish) {
+      formPublish.addEventListener("submit", (e) => {
+        e.preventDefault();
+        this.handlePublishForm(formPublish, modalPublish);
+      });
+    }
+
+    // Modal de Login Administrador
+    const btnOpenLogin = document.getElementById("btn-open-login");
+    const btnOpenLoginFooter = document.getElementById("btn-open-login-footer");
+    const modalLogin = document.getElementById("modal-login");
+    const btnCloseLogin = document.getElementById("btn-close-login");
+    const formLogin = document.getElementById("form-login");
+
+    if (btnOpenLogin && modalLogin) {
+      btnOpenLogin.addEventListener("click", () => this.openLoginModal(modalLogin));
+    }
+    if (btnOpenLoginFooter && modalLogin) {
+      btnOpenLoginFooter.addEventListener("click", (e) => {
+        e.preventDefault();
+        this.openLoginModal(modalLogin);
+      });
+    }
+    if (btnCloseLogin && modalLogin) {
+      btnCloseLogin.addEventListener("click", () => this.closeModal(modalLogin));
+    }
+
+    if (formLogin && modalLogin) {
+      formLogin.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        await this.handleLogin(formLogin, modalLogin);
+      });
+    }
+
+    // Painel de Controle da Autora (Top Bar e Navbar)
+    const modalAdminPanel = document.getElementById("modal-admin-panel");
+    const btnCloseAdminPanel = document.getElementById("btn-close-admin-panel");
+
+    document.querySelectorAll("#btn-open-admin-panel, .btn-open-admin-panel").forEach(btn => {
+      btn.addEventListener("click", () => {
+        if (modalAdminPanel) this.openAdminPanelModal(modalAdminPanel);
+      });
+    });
+
+    if (btnCloseAdminPanel && modalAdminPanel) {
+      btnCloseAdminPanel.addEventListener("click", () => {
+        this.closeModal(modalAdminPanel);
+      });
+    }
+
+    // Formulário de Alteração de Senha
+    const formChangePass = document.getElementById("form-change-password");
+    if (formChangePass) {
+      formChangePass.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        await this.handleChangePassword(formChangePass);
+      });
+    }
+
+    // Backup e Restauração
+    const btnExportBackup = document.getElementById("btn-export-backup");
+    if (btnExportBackup) {
+      btnExportBackup.addEventListener("click", () => this.exportBackup());
+    }
+
+    const inputImportBackup = document.getElementById("input-import-backup");
+    if (inputImportBackup) {
+      inputImportBackup.addEventListener("change", (e) => this.importBackup(e));
+    }
+
+    // Toggle de visibilidade de senha no login
+    const btnTogglePass = document.getElementById("btn-toggle-pass");
+    const inputPass = document.getElementById("input-admin-pass");
+    if (btnTogglePass && inputPass) {
+      btnTogglePass.addEventListener("click", () => {
+        if (inputPass.type === "password") {
+          inputPass.type = "text";
+          btnTogglePass.textContent = "🙈";
+        } else {
+          inputPass.type = "password";
+          btnTogglePass.textContent = "👁️";
+        }
+      });
+    }
+
+    // Logout (Top Bar, Navbar e Drawer Mobile)
+    document.querySelectorAll("#btn-logout, .btn-logout").forEach(btn => {
+      btn.addEventListener("click", () => this.logout());
+    });
 
     // Modal de Leitura
     const modalReader = document.getElementById("modal-reader");
@@ -436,10 +555,568 @@ class BlogManager {
       }
     });
 
-    
+    // Gerenciador de Foto da Autora (Upload restrito / visualização)
+    this.setupPhotoHandler();
   }
 
-  
+  /* ===== Autenticação Segura com PBKDF2 e Rate Limiting ===== */
+
+  openLoginModal(modalLogin) {
+    const lockedSeconds = this.rateLimiter.isLocked();
+    if (lockedSeconds > 0) {
+      alert(`Muitas tentativas incorretas. Por segurança, aguarde ${lockedSeconds} segundos para tentar novamente.`);
+      return;
+    }
+    this.openModal(modalLogin);
+  }
+
+  async handleLogin(form, modal) {
+    const inputPass = form.querySelector("#input-admin-pass");
+    const rawPass = inputPass ? inputPass.value : "";
+    const enteredPass = rawPass.trim().replace(/[\u200B-\u200D\uFEFF\u00A0]/g, "");
+    const submitBtn = form.querySelector("button[type='submit']");
+
+    if (!enteredPass) {
+      alert("Por favor, digite sua senha de administradora.");
+      return;
+    }
+
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Validando credenciais...";
+    }
+
+    try {
+      const { url, anonKey } = window.dbService.getCredentials();
+      const response = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: enteredPass, url, key: anonKey })
+      });
+
+      if (response.ok) {
+        this.isAdmin = true;
+        form.reset();
+        this.closeModal(modal);
+        this.updateAdminUI();
+        this.renderArticles();
+        this.showToast("Bem-vinda, Isabela! Modo de Administradora autenticado com segurança. 👑");
+      } else {
+        const errorData = await response.json();
+        alert(`Erro ao validar login: ${errorData.error}`);
+      }
+    } catch (err) {
+      console.error("Erro no processamento de login:", err);
+      alert("Erro de comunicação ao validar login.");
+    } finally {
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Entrar no Painel";
+      }
+    }
+  }
+
+  async handleChangePassword(form) {
+    if (!this.checkSession()) return;
+
+    const currentPass = form.querySelector("#input-current-pass").value;
+    const newPass = form.querySelector("#input-new-pass").value;
+    const confirmPass = form.querySelector("#input-confirm-pass").value;
+    const submitBtn = form.querySelector("button[type='submit']");
+
+    if (newPass.length < 8) {
+      alert("A nova senha deve possuir no mínimo 8 caracteres para garantir boa segurança.");
+      return;
+    }
+
+    if (newPass !== confirmPass) {
+      alert("A confirmação da nova senha não confere.");
+      return;
+    }
+
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Criptografando nova senha...";
+    }
+
+    try {
+      const storedSalt = localStorage.getItem(this.saltKey) || DEFAULT_SALT;
+      const storedHash = localStorage.getItem(this.hashKey) || DEFAULT_HASH;
+
+      const currentHash = await CryptoSecurity.hashPassword(currentPass, storedSalt);
+
+      if (!CryptoSecurity.timingSafeEqual(currentHash, storedHash)) {
+        alert("A senha atual digitada está incorreta.");
+        return;
+      }
+
+      // Gera um novo Salt criptograficamente aleatório e calcula novo PBKDF2
+      const freshSalt = CryptoSecurity.generateSalt();
+      const freshHash = await CryptoSecurity.hashPassword(newPass, freshSalt);
+
+      if (window.dbService) {
+        await window.dbService.saveAdminCredentials(freshHash, freshSalt);
+      } else {
+        localStorage.setItem(this.saltKey, freshSalt);
+        localStorage.setItem(this.hashKey, freshHash);
+      }
+
+      form.reset();
+      this.showToast("Senha de administradora alterada e sincronizada com segurança! 🔒");
+    } catch (e) {
+      console.error("Erro ao alterar senha:", e);
+      alert("Erro ao aplicar criptografia à nova senha.");
+    } finally {
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Salvar Nova Senha";
+      }
+    }
+  }
+
+  async checkSession() {
+    // Session is checked by Edge Middleware for gestao-secreta-2026.html
+    // If the JS loads, the user is authenticated via HttpOnly Cookie
+    return true;
+  }
+
+  async logout() {
+    try {
+      await fetch('/api/logout');
+    } catch (e) {}
+    this.isAdmin = false;
+    window.location.href = '/index.html';
+  }
+
+  updateAdminUI() {
+    const adminLoggedControls = document.getElementById("admin-logged-controls");
+    const btnOpenLogin = document.getElementById("btn-open-login");
+    const btnOpenLoginFooter = document.getElementById("btn-open-login-footer");
+    const navItemMobileLogin = document.getElementById("nav-item-mobile-login");
+    const authorPhotoAdminActions = document.getElementById("author-photo-admin-actions");
+
+    if (this.isAdmin) {
+      document.body.classList.add("admin-logged-in");
+      if (adminLoggedControls) adminLoggedControls.style.display = "inline-flex";
+      if (btnOpenLogin) btnOpenLogin.style.display = "none";
+      if (authorPhotoAdminActions) authorPhotoAdminActions.style.display = "flex";
+
+      if (navItemMobileLogin) {
+        navItemMobileLogin.innerHTML = '👑 Isabela (Autora Conectada) &middot; <span style="text-decoration:underline; font-size: 0.85em;">Sair</span>';
+        navItemMobileLogin.onclick = (e) => {
+          e.preventDefault();
+          this.logout();
+        };
+      }
+      if (btnOpenLoginFooter) {
+        btnOpenLoginFooter.innerHTML = '👑 Isabela (Autora Conectada) &middot; Sair';
+        btnOpenLoginFooter.onclick = (e) => {
+          e.preventDefault();
+          this.logout();
+        };
+      }
+    } else {
+      document.body.classList.remove("admin-logged-in");
+      if (adminLoggedControls) adminLoggedControls.style.display = "none";
+      if (btnOpenLogin) btnOpenLogin.style.display = "inline-flex";
+      if (authorPhotoAdminActions) authorPhotoAdminActions.style.display = "none";
+
+      if (navItemMobileLogin) {
+        navItemMobileLogin.innerHTML = '🔐 Área da Autora (Login)';
+        navItemMobileLogin.onclick = (e) => {
+          e.preventDefault();
+          this.openLoginModal(document.getElementById("modal-login"));
+        };
+      }
+      if (btnOpenLoginFooter) {
+        btnOpenLoginFooter.innerHTML = '👑 Área da Autora (Login)';
+        btnOpenLoginFooter.onclick = (e) => {
+          e.preventDefault();
+          this.openLoginModal(document.getElementById("modal-login"));
+        };
+      }
+    }
+  }
+
+  openAdminPanelModal(modal) {
+    if (!this.checkSession()) return;
+
+    const articles = this.getArticles();
+    const countTotal = document.getElementById("admin-stat-total");
+    const countPenal = document.getElementById("admin-stat-penal");
+    const countCivil = document.getElementById("admin-stat-civil");
+    const countConst = document.getElementById("admin-stat-const");
+    const countTrab = document.getElementById("admin-stat-trab");
+    const countAmbiental = document.getElementById("admin-stat-ambiental");
+
+    if (countTotal) countTotal.textContent = articles.length;
+    if (countPenal) countPenal.textContent = articles.filter(a => a.categoria === "Direito Penal").length;
+    if (countCivil) countCivil.textContent = articles.filter(a => a.categoria === "Direito Civil").length;
+    if (countConst) countConst.textContent = articles.filter(a => a.categoria === "Direito Constitucional").length;
+    if (countTrab) countTrab.textContent = articles.filter(a => a.categoria === "Direito do Trabalho").length;
+    if (countAmbiental) countAmbiental.textContent = articles.filter(a => a.categoria === "Direito Ambiental").length;
+
+    // Atualiza campos e status da conexão com Supabase
+    if (window.dbService) {
+      const creds = window.dbService.getCredentials();
+      const inputUrl = document.getElementById("input-supabase-url");
+      const inputKey = document.getElementById("input-supabase-key");
+      if (inputUrl) inputUrl.value = creds.url || "";
+      if (inputKey) inputKey.value = creds.anonKey || "";
+      this.updateDbStatusBadge();
+    }
+
+    this.openModal(modal);
+  }
+
+  updateDbStatusBadge() {
+    const badge = document.getElementById("db-status-badge");
+    if (!badge) return;
+
+    if (window.dbService && window.dbService.isConfigured()) {
+      badge.innerHTML = '<span style="color: #2e7d32;">🟢 Conectado na Nuvem (PostgreSQL / Supabase)</span>';
+    } else {
+      badge.innerHTML = '<span style="color: #b78103;">🟡 Modo Local / Cache (Offline)</span>';
+    }
+  }
+
+  setupDatabaseEventListeners() {
+    const formDb = document.getElementById("form-database-config");
+    const btnSyncCloud = document.getElementById("btn-sync-cloud");
+    const btnDisconnectDb = document.getElementById("btn-disconnect-db");
+
+    if (formDb) {
+      formDb.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const urlInput = document.getElementById("input-supabase-url");
+        const keyInput = document.getElementById("input-supabase-key");
+        const submitBtn = document.getElementById("btn-save-db");
+
+        const url = (urlInput ? urlInput.value : "").trim();
+        const key = (keyInput ? keyInput.value : "").trim();
+
+        if (!url || !key) {
+          alert("Por favor, preencha a URL e a Anon Key do Supabase.");
+          return;
+        }
+
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.textContent = "Testando conexão...";
+        }
+
+        const testResult = await window.dbService.testConnection(url, key);
+
+        if (testResult.ok) {
+          window.dbService.saveCloudCredentials(url, key);
+          this.updateDbStatusBadge();
+
+          // Sincroniza artigos locais com a nuvem automaticamente
+          await window.dbService.syncLocalToCloud(this.getArticles());
+          await this.loadArticlesFromDb();
+
+          this.showToast("Conexão com o Supabase estabelecida com sucesso! ☁️✨");
+          alert("Sucesso! O banco de dados PostgreSQL na nuvem está ativo e sincronizado com o blog.");
+        } else {
+          alert(`Falha ao conectar com o Supabase:\n${testResult.error}\n\nDica: Verifique se executou o script schema.sql no SQL Editor do Supabase.`);
+        }
+
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = "💾 Conectar & Salvar Chaves";
+        }
+      });
+    }
+
+    if (btnDisconnectDb) {
+      btnDisconnectDb.addEventListener("click", () => {
+        if (confirm("Deseja desconectar o banco de dados na nuvem e voltar ao modo local (cache)?")) {
+          window.dbService.saveCloudCredentials("", "");
+          const urlInput = document.getElementById("input-supabase-url");
+          const keyInput = document.getElementById("input-supabase-key");
+          if (urlInput) urlInput.value = "";
+          if (keyInput) keyInput.value = "";
+          this.updateDbStatusBadge();
+          this.showToast("Modo local reativado.");
+        }
+      });
+    }
+
+    if (btnSyncCloud) {
+      btnSyncCloud.addEventListener("click", async () => {
+        if (!window.dbService || !window.dbService.isConfigured()) {
+          alert("Configure e salve a conexão com o Supabase primeiro.");
+          return;
+        }
+        btnSyncCloud.disabled = true;
+        btnSyncCloud.textContent = "Sincronizando...";
+
+        const result = await window.dbService.syncLocalToCloud(this.getArticles());
+        if (result.ok) {
+          this.showToast(`Sincronização concluída! ${result.count} artigos salvos na nuvem.`);
+        } else {
+          alert(`Erro na sincronização: ${result.error}`);
+        }
+
+        btnSyncCloud.disabled = false;
+        btnSyncCloud.textContent = "🔄 Sincronizar Artigos com a Nuvem";
+      });
+    }
+  }
+
+  /* ===== Backup & Restauração de Conteúdo ===== */
+
+  exportBackup() {
+    if (!this.checkSession()) return;
+    const articles = this.getArticles();
+    const backupData = {
+      blog: "Legalmente Isabela",
+      versao: "2.0",
+      exportadoEm: new Date().toISOString(),
+      artigos: articles
+    };
+
+    const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    const dateStr = new Date().toISOString().split("T")[0];
+    a.href = url;
+    a.download = `backup-legalmente-isabela-${dateStr}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    this.showToast("Backup exportado com sucesso! Arquivo JSON salvo.");
+  }
+
+  importBackup(event) {
+    if (!this.checkSession()) return;
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const json = JSON.parse(e.target.result);
+        if (!json.artigos || !Array.isArray(json.artigos)) {
+          throw new Error("Formato de backup inválido.");
+        }
+
+        const validArticles = json.artigos.filter(this.validateArticleSchema);
+
+        if (confirm(`Foram encontrados ${validArticles.length} artigos válidos no arquivo. Deseja restaurá-los? Isso substituirá a lista atual.`)) {
+          this.saveArticles(validArticles);
+          this.renderArticles();
+          this.showToast("Backup restaurado com sucesso! Lista de artigos atualizada.");
+          const modal = document.getElementById("modal-admin-panel");
+          if (modal) this.closeModal(modal);
+        }
+      } catch (err) {
+        alert("Erro ao processar o arquivo de backup. Verifique se o arquivo JSON está íntegro.");
+      }
+      event.target.value = "";
+    };
+    reader.readAsText(file);
+  }
+
+  selectCategory(categoryName) {
+    this.currentCategory = categoryName;
+    document.querySelectorAll(".category-pill").forEach(btn => {
+      if (btn.dataset.category === categoryName) {
+        btn.classList.add("active");
+      } else {
+        btn.classList.remove("active");
+      }
+    });
+    this.renderArticles();
+  }
+
+  openModal(modalEl) {
+    if (!modalEl) return;
+    modalEl.classList.add("open");
+    document.body.style.overflow = "hidden";
+  }
+
+  closeModal(modalEl) {
+    if (!modalEl) return;
+    modalEl.classList.remove("open");
+    document.body.style.overflow = "";
+  }
+
+  /* ===== Publicação e Edição de Artigos ===== */
+
+  openPublishModal() {
+    if (!this.checkSession()) {
+      const modalLogin = document.getElementById("modal-login");
+      this.openLoginModal(modalLogin);
+      this.showToast("Faça login com a senha de administradora para publicar.");
+      return;
+    }
+
+    this.editingArticleId = null;
+    const form = document.getElementById("form-publish");
+    const modal = document.getElementById("modal-publish");
+    const modalTitle = document.getElementById("publish-modal-title");
+    const modalDesc = document.getElementById("publish-modal-desc");
+    const submitBtn = document.getElementById("btn-publish-submit");
+    const editIdInput = document.getElementById("input-edit-id");
+
+    if (form) form.reset();
+    if (modalTitle) modalTitle.textContent = "Nova Publicação";
+    if (modalDesc) modalDesc.textContent = "Preencha as informações do seu artigo para publicá-lo no blog.";
+    if (submitBtn) submitBtn.textContent = "Publicar no Blog";
+    if (editIdInput) editIdInput.value = "";
+
+    this.openModal(modal);
+  }
+
+  openEditArticle(id) {
+    if (!this.checkSession()) {
+      const modalLogin = document.getElementById("modal-login");
+      this.openLoginModal(modalLogin);
+      return;
+    }
+
+    const articles = this.getArticles();
+    const art = articles.find(a => a.id === id);
+    if (!art) return;
+
+    this.editingArticleId = id;
+    const form = document.getElementById("form-publish");
+    const modal = document.getElementById("modal-publish");
+    const modalTitle = document.getElementById("publish-modal-title");
+    const modalDesc = document.getElementById("publish-modal-desc");
+    const submitBtn = document.getElementById("btn-publish-submit");
+    const editIdInput = document.getElementById("input-edit-id");
+
+    if (form) {
+      form.titulo.value = art.titulo;
+      form.categoria.value = art.categoria;
+      form.tempoLeitura.value = art.tempoLeitura;
+      form.resumo.value = art.resumo;
+      form.conteudo.value = art.conteudo;
+    }
+
+    if (editIdInput) editIdInput.value = id;
+    if (modalTitle) modalTitle.textContent = "Editar Publicação";
+    if (modalDesc) modalDesc.textContent = "Altere os dados do artigo e clique em salvar para atualizar o blog.";
+    if (submitBtn) submitBtn.textContent = "Salvar Alterações";
+
+    this.openModal(modal);
+  }
+
+  async handlePublishForm(form, modal) {
+    if (!this.checkSession()) return;
+
+    // Sanitização de entradas
+    const titulo = form.titulo.value.trim();
+    const categoria = form.categoria.value;
+    const resumo = form.resumo.value.trim();
+    const conteudo = form.conteudo.value.trim();
+    const tempoLeitura = form.tempoLeitura.value.trim() || "3 min";
+    const editId = form.querySelector("#input-edit-id") ? form.querySelector("#input-edit-id").value : "";
+
+    if (!titulo || !resumo || !conteudo) {
+      alert("Por favor, preencha todos os campos obrigatórios.");
+      return;
+    }
+
+    const articles = this.getArticles();
+
+    if (editId) {
+      // Modo Edição
+      const index = articles.findIndex(a => a.id === editId);
+      if (index !== -1) {
+        articles[index].titulo = titulo;
+        articles[index].categoria = categoria;
+        articles[index].resumo = resumo;
+        articles[index].conteudo = conteudo;
+        articles[index].tempoLeitura = tempoLeitura.includes("min") ? tempoLeitura : `${tempoLeitura} min`;
+
+        if (window.dbService) {
+          await window.dbService.saveArticle(articles[index]);
+        } else {
+          this.saveArticles(articles);
+        }
+
+        form.reset();
+        this.closeModal(modal);
+        this.renderArticles();
+        this.showToast("Artigo atualizado com sucesso! ✨");
+
+        const modalReader = document.getElementById("modal-reader");
+        if (modalReader && modalReader.classList.contains("open")) {
+          this.readArticle(editId);
+        }
+        return;
+      }
+    }
+
+    // Modo Nova Publicação
+    const today = new Date();
+    const dataFormatada = today.toLocaleDateString("pt-BR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric"
+    });
+
+    const newArticle = {
+      id: "art-" + Date.now(),
+      titulo,
+      categoria,
+      data: dataFormatada,
+      tempoLeitura: tempoLeitura.includes("min") ? tempoLeitura : `${tempoLeitura} min`,
+      autor: "Isabela",
+      resumo,
+      conteudo
+    };
+
+    if (window.dbService) {
+      await window.dbService.saveArticle(newArticle);
+    } else {
+      articles.unshift(newArticle);
+      this.saveArticles(articles);
+    }
+
+    form.reset();
+    this.closeModal(modal);
+
+    this.selectCategory(categoria);
+    this.showToast("Artigo publicado com sucesso! ✨");
+
+    const section = document.getElementById("artigos-section");
+    if (section) {
+      section.scrollIntoView({ behavior: "smooth" });
+    }
+  }
+
+  async deleteArticle(id) {
+    if (!this.checkSession()) return;
+
+    const articles = this.getArticles();
+    const art = articles.find(a => a.id === id);
+    const tituloArtigo = art ? `"${art.titulo}"` : "este artigo";
+
+    if (!confirm(`Tem certeza de que deseja excluir ${tituloArtigo}? Esta ação é definitiva.`)) {
+      return;
+    }
+
+    if (window.dbService) {
+      await window.dbService.deleteArticle(id);
+    } else {
+      const updated = articles.filter(a => a.id !== id);
+      this.saveArticles(updated);
+    }
+
+    const modal = document.getElementById("modal-reader");
+    if (modal) this.closeModal(modal);
+
+    this.renderArticles();
+    this.showToast("Publicação excluída com sucesso.");
+  }
+
+  /* ===== Renderização de Artigos com Proteção XSS Estrita ===== */
 
   renderArticles() {
     const container = document.getElementById("articles-grid");
@@ -471,9 +1148,9 @@ class BlogManager {
           <h3>Nenhum artigo encontrado</h3>
           <p>Não há publicações para este filtro no momento.</p>
           ${this.isAdmin ? `
-            <button class="btn btn-primary" onclick="window.blogManager.openPublishModal()">Publicar agora</button>
+            <button class="btn btn-primary" onclick="window.adminManager.openPublishModal()">Publicar agora</button>
           ` : `
-            <button class="btn btn-outline" onclick="window.blogManager.selectCategory('Todas')">Ver todas as categorias</button>
+            <button class="btn btn-outline" onclick="window.adminManager.selectCategory('Todas')">Ver todas as categorias</button>
           `}
         </div>
       `;
@@ -483,10 +1160,10 @@ class BlogManager {
     container.innerHTML = articles.map(art => {
       const adminButtonsHtml = this.isAdmin ? `
         <div class="card-admin-actions">
-          <button class="btn-card-action btn-card-edit" onclick="event.stopPropagation(); window.blogManager.openEditArticle('${this.escapeHtml(art.id)}')" title="Editar artigo">
+          <button class="btn-card-action btn-card-edit" onclick="event.stopPropagation(); window.adminManager.openEditArticle('${this.escapeHtml(art.id)}')" title="Editar artigo">
             ✏️ Editar
           </button>
-          <button class="btn-card-action btn-card-delete" onclick="event.stopPropagation(); window.blogManager.deleteArticle('${this.escapeHtml(art.id)}')" title="Excluir artigo">
+          <button class="btn-card-action btn-card-delete" onclick="event.stopPropagation(); window.adminManager.deleteArticle('${this.escapeHtml(art.id)}')" title="Excluir artigo">
             🗑️ Excluir
           </button>
         </div>
@@ -509,7 +1186,7 @@ class BlogManager {
                 <span class="article-author">Por ${this.escapeHtml(art.autor || "Isabela")}</span>
                 <span class="article-date">${this.escapeHtml(art.data)}</span>
               </div>
-              <button class="btn-read-more" onclick="window.blogManager.readArticle('${this.escapeHtml(art.id)}')">
+              <button class="btn-read-more" onclick="window.adminManager.readArticle('${this.escapeHtml(art.id)}')">
                 Ler artigo →
               </button>
             </div>
@@ -537,10 +1214,10 @@ class BlogManager {
 
       const adminActionsHtml = this.isAdmin ? `
         <div class="reader-admin-buttons">
-          <button class="btn btn-outline" onclick="window.blogManager.openEditArticle('${this.escapeHtml(art.id)}')">
+          <button class="btn btn-outline" onclick="window.adminManager.openEditArticle('${this.escapeHtml(art.id)}')">
             ✏️ Editar publicação
           </button>
-          <button class="btn btn-text-danger" onclick="window.blogManager.deleteArticle('${this.escapeHtml(art.id)}')">
+          <button class="btn btn-text-danger" onclick="window.adminManager.deleteArticle('${this.escapeHtml(art.id)}')">
             🗑️ Excluir publicação
           </button>
         </div>
@@ -567,7 +1244,7 @@ class BlogManager {
           </div>
         </div>
         <div class="reader-actions">
-          <button class="btn btn-outline" onclick="window.blogManager.copyArticleLink('${this.escapeHtml(art.id)}')">
+          <button class="btn btn-outline" onclick="window.adminManager.copyArticleLink('${this.escapeHtml(art.id)}')">
             📋 Copiar link
           </button>
           ${adminActionsHtml}
@@ -860,8 +1537,8 @@ class BlogManager {
           <small style="color: var(--text-muted);">${this.escapeHtml(item.definicao)}</small>
         </div>
         <div style="display: flex; gap: 8px;">
-          <button class="btn btn-outline" style="font-size: 0.75rem; padding: 4px 8px;" onclick="window.blogManager.startEditGlossario(${index})">Editar</button>
-          <button class="btn btn-text-danger" style="font-size: 0.75rem; padding: 4px 8px;" onclick="window.blogManager.removeGlossarioItem(${index})">Remover</button>
+          <button class="btn btn-outline" style="font-size: 0.75rem; padding: 4px 8px;" onclick="window.adminManager.startEditGlossario(${index})">Editar</button>
+          <button class="btn btn-text-danger" style="font-size: 0.75rem; padding: 4px 8px;" onclick="window.adminManager.removeGlossarioItem(${index})">Remover</button>
         </div>
       `;
       listEl.appendChild(div);
@@ -947,8 +1624,8 @@ class BlogManager {
           <br><small style="color: var(--text-muted);">${this.escapeHtml(item.texto)}</small>
         </div>
         <div style="display: flex; gap: 8px;">
-          <button class="btn btn-outline" style="font-size: 0.75rem; padding: 4px 8px;" onclick="window.blogManager.startEditCuriosidade(${index})">Editar</button>
-          <button class="btn btn-text-danger" style="font-size: 0.75rem; padding: 4px 8px;" onclick="window.blogManager.removeCuriosidadeItem(${index})">Remover</button>
+          <button class="btn btn-outline" style="font-size: 0.75rem; padding: 4px 8px;" onclick="window.adminManager.startEditCuriosidade(${index})">Editar</button>
+          <button class="btn btn-text-danger" style="font-size: 0.75rem; padding: 4px 8px;" onclick="window.adminManager.removeCuriosidadeItem(${index})">Remover</button>
         </div>
       `;
       listEl.appendChild(div);
@@ -991,9 +1668,9 @@ class BlogManager {
 }
 
 function initBlogManager() {
-  if (!window.blogManager) {
+  if (!window.adminManager) {
     try {
-      window.blogManager = new BlogManager();
+      window.adminManager = new BlogManager();
     } catch (e) {
       console.error("Erro ao inicializar BlogManager:", e);
     }

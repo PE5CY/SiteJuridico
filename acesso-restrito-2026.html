@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Acesso Restrito</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <meta name="robots" content="noindex, nofollow" />
+</head>
+<body style="display: flex; justify-content: center; align-items: center; height: 100vh; background: #fdfaf9;">
+  <div class="modal-card modal-card-sm" style="display: block; position: relative;">
+    <div class="modal-head">
+      <div class="modal-icon-badge">👑</div>
+      <h2>Acesso da Autora</h2>
+    </div>
+    <form id="login-form">
+      <div class="form-group" style="text-align: left;">
+        <label for="password">Senha de Administradora</label>
+        <input type="password" id="password" class="form-input" required />
+      </div>
+      <div id="error-msg" style="color: red; margin-bottom: 10px; display: none;">Senha incorreta.</div>
+      <button type="submit" class="btn btn-primary" style="width: 100%;">Entrar no Painel</button>
+    </form>
+  </div>
+  <script>
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const pwd = document.getElementById('password').value;
+      const res = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: pwd })
+      });
+      if (res.ok) {
+        window.location.href = '/gestao-secreta-2026.html';
+      } else {
+        document.getElementById('error-msg').style.display = 'block';
+      }
+    });
+  </script>
+</body>
+</html>
