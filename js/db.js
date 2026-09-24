@@ -107,9 +107,12 @@ class DatabaseService {
           localStorage.setItem(this.storageKeyArticles, JSON.stringify(mappedArticles));
           return mappedArticles;
         } else if (!error && Array.isArray(data) && data.length === 0) {
-          // Se a tabela do banco na nuvem estiver vazia, sincroniza os artigos iniciais
-          await this.syncLocalToCloud(defaultArticles);
-          return defaultArticles;
+          // Se a tabela do banco na nuvem estiver vazia, tenta usar o cache local antes dos padrões
+          const localCache = this.getLocalArticles();
+          const articlesToSync = (localCache && localCache.length > 0) ? localCache : defaultArticles;
+          
+          await this.syncLocalToCloud(articlesToSync);
+          return articlesToSync;
         }
       } catch (err) {
         console.warn("Falha de rede ao consultar Supabase, usando cache local:", err);
